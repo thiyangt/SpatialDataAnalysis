@@ -1,0 +1,142 @@
+[
+  {
+    "objectID": "week1/index.html#what-is-spatial-data-analysis",
+    "href": "week1/index.html#what-is-spatial-data-analysis",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "What is Spatial Data Analysis?",
+    "text": "What is Spatial Data Analysis?\nSpatial data analysis deals with data that have a location component (e.g., latitude–longitude, regions, grids).\nUnlike standard data analysis, spatial data:\n\nAre not independent\nExhibit spatial structure and dependence"
+  },
+  {
+    "objectID": "week1/index.html#temporal-data-vs-spatial-data",
+    "href": "week1/index.html#temporal-data-vs-spatial-data",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Temporal data vs Spatial data",
+    "text": "Temporal data vs Spatial data\n\nDependence has a different structure\nDifferent notion of “distance”\nStationarity means different things\nCausality interpretation is harder in space\nDifferent modeling tools\nThe key conceptual shift"
+  },
+  {
+    "objectID": "week1/index.html#example",
+    "href": "week1/index.html#example",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Example",
+    "text": "Example\n\n\nSuppose we measure temperature at several weather stations.\nQuestion: 👉 What is the temperature at an unobserved location?"
+  },
+  {
+    "objectID": "week1/index.html#spatial-systems-are-often-complex-systems",
+    "href": "week1/index.html#spatial-systems-are-often-complex-systems",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Spatial systems are often complex systems",
+    "text": "Spatial systems are often complex systems\n\nMany interacting components\nNonlinear relationships\nFeedback loops"
+  },
+  {
+    "objectID": "week1/index.html#goals-of-spatial-analysis",
+    "href": "week1/index.html#goals-of-spatial-analysis",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Goals of Spatial Analysis",
+    "text": "Goals of Spatial Analysis\n\nPrediction (Interpolation)\nAssimilation of Observations\nMechanistic Understanding\nSpatial inference"
+  },
+  {
+    "objectID": "week1/index.html#types-of-spatial-models",
+    "href": "week1/index.html#types-of-spatial-models",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Types of Spatial Models",
+    "text": "Types of Spatial Models\n\nDescriptive models\nDynamical models"
+  },
+  {
+    "objectID": "week1/index.html#why-start-with-history",
+    "href": "week1/index.html#why-start-with-history",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Why Start with History?",
+    "text": "Why Start with History?\nSpatial analysis did not emerge as a single discipline. It evolved from:\n\nGeography\nStatistics\nEpidemiology\nEnvironmental science\n\n👉 Understanding the history helps to see:\nWhy spatial dependence matters\nWhy standard statistics is not enough"
+  },
+  {
+    "objectID": "week1/index.html#the-first-turning-point-mapping-disease",
+    "href": "week1/index.html#the-first-turning-point-mapping-disease",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "The First Turning Point: Mapping Disease",
+    "text": "The First Turning Point: Mapping Disease\n\nJohn Snow and the Cholera Map (1854)\nDuring a cholera outbreak in London, Snow mapped deaths.\n\nHe identified a cluster around the Broad Street pump.\n👉 Key insight:\n\nDisease is not randomly distributed in space"
+  },
+  {
+    "objectID": "week1/index.html#reading",
+    "href": "week1/index.html#reading",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Reading",
+    "text": "Reading\nhttps://www.r-bloggers.com/2013/03/john-snows-cholera-data-in-more-formats/"
+  },
+  {
+    "objectID": "week1/index.html#early-20th-century-geography-and-spatial-thinking-walther-tobler-1970",
+    "href": "week1/index.html#early-20th-century-geography-and-spatial-thinking-walther-tobler-1970",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Early 20th Century: Geography and Spatial Thinking, Walther Tobler (1970)",
+    "text": "Early 20th Century: Geography and Spatial Thinking, Walther Tobler (1970)\nTobler formalized what Snow intuitively used:\n“Everything is related to everything else, but near things are more related than distant things.”\n👉 This became the foundation of:\nSpatial correlation\nSpatial modeling"
+  },
+  {
+    "objectID": "week1/index.html#the-problem-with-classical-statistics",
+    "href": "week1/index.html#the-problem-with-classical-statistics",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "The Problem with Classical Statistics",
+    "text": "The Problem with Classical Statistics\nTraditional statistics assumes:\nObservations are independent\nBut in spatial data:\n❌ This assumption fails\nExample:\nTemperature in Colombo ≠ independent of nearby areas\nDengue cases in one district affect neighboring districts\n👉 This led to the birth of spatial statistics"
+  },
+  {
+    "objectID": "week1/index.html#mid-20th-century-birth-of-spatial-statistics",
+    "href": "week1/index.html#mid-20th-century-birth-of-spatial-statistics",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Mid-20th Century: Birth of Spatial Statistics",
+    "text": "Mid-20th Century: Birth of Spatial Statistics\nMining and Geology → Kriging\nDanie Krige\n\nWorked on predicting gold concentrations\nNeeded optimal prediction at unobserved locations."
+  },
+  {
+    "objectID": "week1/index.html#georges-matheron",
+    "href": "week1/index.html#georges-matheron",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Georges Matheron",
+    "text": "Georges Matheron\n\nFormalized geostatistics\nDeveloped kriging theory"
+  },
+  {
+    "objectID": "week1/index.html#rise-of-spatial-autocorrelation-1960s1980s",
+    "href": "week1/index.html#rise-of-spatial-autocorrelation-1960s1980s",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Rise of Spatial Autocorrelation (1960s–1980s)",
+    "text": "Rise of Spatial Autocorrelation (1960s–1980s)\nResearchers developed measures to quantify spatial structure:\nMoran’s I\nGeary’s C"
+  },
+  {
+    "objectID": "week1/index.html#the-computing-revolution-1980s2000s",
+    "href": "week1/index.html#the-computing-revolution-1980s2000s",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "The Computing Revolution (1980s–2000s)",
+    "text": "The Computing Revolution (1980s–2000s)\nWith computers:\nLarge spatial datasets became manageable\nGIS systems emerged"
+  },
+  {
+    "objectID": "week1/index.html#esri-and-gis-revolution",
+    "href": "week1/index.html#esri-and-gis-revolution",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Esri and GIS Revolution",
+    "text": "Esri and GIS Revolution\n\nGeographic Information Systems (GIS)\nLayer-based spatial analysis\nIntegration of maps + data"
+  },
+  {
+    "objectID": "week1/index.html#modern-era-spatial-temporal-big-data",
+    "href": "week1/index.html#modern-era-spatial-temporal-big-data",
+    "title": "Intoduction to Spatial Data Analysis",
+    "section": "Modern Era: Spatial + Temporal + Big Data",
+    "text": "Modern Era: Spatial + Temporal + Big Data\n\nSpatio-temporal models\nBayesian spatial models\nComplex systems\nMachine Learning + Spatial"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "[Introduction to Spatial Data Analysis](/week1/index.html)"
+  },
+  {
+    "objectID": "about.html#week-1",
+    "href": "about.html#week-1",
+    "title": "About",
+    "section": "",
+    "text": "[Introduction to Spatial Data Analysis](/week1/index.html)"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "qweb",
+    "section": "",
+    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+  }
+]
