@@ -2,6 +2,6 @@
 title: "About"
 ---
 
-##  Week 1
+## Week 1: 23 April 2026
 
-\[Introduction to Spatial Data Analysis\](/week1/index.html)
+[Introduction to Spatial Data Analysis](/week1/index.html)

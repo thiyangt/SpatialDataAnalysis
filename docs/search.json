@@ -123,20 +123,13 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "[Introduction to Spatial Data Analysis](/week1/index.html)"
+    "text": "Introduction to Spatial Data Analysis"
   },
   {
-    "objectID": "about.html#week-1",
-    "href": "about.html#week-1",
+    "objectID": "about.html#week-1-23-april-2026",
+    "href": "about.html#week-1-23-april-2026",
     "title": "About",
     "section": "",
-    "text": "[Introduction to Spatial Data Analysis](/week1/index.html)"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "qweb",
-    "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites.\n\n1 + 1\n\n[1] 2"
+    "text": "Introduction to Spatial Data Analysis"
   }
 ]
