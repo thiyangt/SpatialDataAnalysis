@@ -1,9 +1,12 @@
 ---
 title: "Intoduction to Spatial Data Analysis"
 author: "Dr Thiyanga S. Talagala"
-format: revealjs
-editor: visual
+format:
+  revealjs: 
+    theme: simple
+    slide-number: true
 ---
+
 
 ## What is Spatial Data Analysis?
 
@@ -15,44 +18,58 @@ Unlike standard data analysis, spatial data:
 
 -   Exhibit **spatial structure and dependence**
 
-##  Example
+## Temporal data vs Spatial data
 
-::: columns
+- Dependence has a different structure
+
+- Different notion of “distance”
+
+- Stationarity means different things
+
+- Causality interpretation is harder in space
+
+- Different modeling tools
+
+- The key conceptual shift
+
+
+## Example
+
+::::: columns
 ::: column
 Suppose we measure temperature at several weather stations.
 
-Question:
-👉 What is the temperature at an unobserved location?  
+Question: 👉 What is the temperature at an unobserved location?
 :::
 
 ::: column
 ![](sltemperature.jpg)
 :::
-:::
+:::::
 
 ## Spatial systems are often complex systems
 
-- Many interacting components
+-   Many interacting components
 
-- Nonlinear relationships
+-   Nonlinear relationships
 
-- Feedback loops
+-   Feedback loops
 
 ## Goals of Spatial Analysis
 
-- Prediction (Interpolation)
+-   Prediction (Interpolation)
 
-- Assimilation of Observations
+-   Assimilation of Observations
 
-- Mechanistic Understanding
+-   Mechanistic Understanding
 
-- Spatial inference 
+-   Spatial inference
 
 ## Types of Spatial Models
 
-- Descriptive models
+-   Descriptive models
 
-- Dynamical models
+-   Dynamical models
 
 # History of Spatial Data Analysis
 
@@ -60,13 +77,13 @@ Question:
 
 Spatial analysis did not emerge as a single discipline. It evolved from:
 
-- Geography
+-   Geography
 
-- Statistics
+-   Statistics
 
-- Epidemiology
+-   Epidemiology
 
-- Environmental science
+-   Environmental science
 
 👉 Understanding the history helps to see:
 
@@ -76,22 +93,21 @@ Why standard statistics is not enough
 
 ## The First Turning Point: Mapping Disease
 
-- John Snow and the Cholera Map (1854)
+-   John Snow and the Cholera Map (1854)
 
-- During a cholera outbreak in London, Snow mapped deaths.
+-   During a cholera outbreak in London, Snow mapped deaths.
 
 He identified a cluster around the Broad Street pump.
 
 👉 Key insight:
 
-- Disease is not randomly distributed in space
+-   Disease is not randomly distributed in space
 
 ## Reading
 
-[https://www.r-bloggers.com/2013/03/john-snows-cholera-data-in-more-formats/](https://www.r-bloggers.com/2013/03/john-snows-cholera-data-in-more-formats/)
+<https://www.r-bloggers.com/2013/03/john-snows-cholera-data-in-more-formats/>
 
-
-##  Early 20th Century: Geography and Spatial Thinking, Walther Tobler (1970)
+## Early 20th Century: Geography and Spatial Thinking, Walther Tobler (1970)
 
 Tobler formalized what Snow intuitively used:
 
@@ -125,18 +141,17 @@ Dengue cases in one district affect neighboring districts
 
 Mining and Geology → Kriging
 
-Danie Krige 
+Danie Krige
 
-- Worked on predicting gold concentrations
+-   Worked on predicting gold concentrations
 
-- Needed optimal prediction at unobserved locations.
+-   Needed optimal prediction at unobserved locations.
 
 ## Georges Matheron
 
-- Formalized geostatistics
+-   Formalized geostatistics
 
-- Developed kriging theory
-
+-   Developed kriging theory
 
 ## Rise of Spatial Autocorrelation (1960s–1980s)
 
@@ -156,8 +171,28 @@ GIS systems emerged
 
 ## Esri and GIS Revolution
 
-- Geographic Information Systems (GIS)
+-   Geographic Information Systems (GIS)
 
-- Layer-based spatial analysis
+-   Layer-based spatial analysis
 
-- Integration of maps + data
+-   Integration of maps + data  
+
+## Modern Era: Spatial + Temporal + Big Data
+
+- Spatio-temporal models
+
+- Bayesian spatial models
+
+- Complex systems
+
+- Machine Learning + Spatial
+
+
+
+# why spatial and temporal data require different statistical thinking?
+
+In-class
+
+
+
+
