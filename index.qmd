@@ -1,5 +1,60 @@
 ---
 title: ""
+editor: source
 ---
 
-## TBA
+# Lab 1
+
+```{r}
+library(sf)
+library(ggplot2)
+pak::pak("thiyangt/SriLanka")
+library(SriLanka)
+lka_adm0
+ggplot(lka_adm0) + 
+  geom_sf()
+```
+
+# Lab 2
+
+## Exercise 2.1
+
+```{r}
+library(tidyverse)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+
+world <- ne_countries(
+  scale = "medium",
+  returnclass = "sf"
+)
+world 
+```
+
+Sinusoidal Projection
+
+```{r}
+ggplot(data = world) +
+  geom_sf() +
+  labs(
+    title = "ESRI:54008 - Sinusoidal Projection"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold")
+  ) +
+  coord_sf(crs = st_crs("ESRI:54008"))
+```
+
+Equidistant Cylindrical Projection:   coord_sf(crs = st_crs("ESRI:54002"))
+
+Mollweide Projection:   coord_sf(crs = st_crs("ESRI:54009"))
+
+Robinson Projection: coord_sf(crs = st_crs("ESRI:54030"))
+
+## Exercise 2.2
+
+Cleck [here](https://static.lib.virginia.edu/statlab/materials/data/VirginiaBoundary.zip) to download data.
+
+Spatial Data Wrangling: In-class

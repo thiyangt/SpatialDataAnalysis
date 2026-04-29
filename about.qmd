@@ -1,7 +1,12 @@
 ---
 title: "About"
+editor: source
 ---
 
 ## Week 1: 23 April 2026
 
 [Introduction to Spatial Data Analysis](/week1/index.html)
+
+## Week 2: 29 April 2026
+
+[Spatial Data Visualisation](/week2/index.html)

@@ -7,7 +7,6 @@ format:
     slide-number: true
 ---
 
-
 ## What is Spatial Data Analysis?
 
 Spatial data analysis deals with data that have a **location component** (e.g., latitude–longitude, regions, grids).
@@ -20,18 +19,17 @@ Unlike standard data analysis, spatial data:
 
 ## Temporal data vs Spatial data
 
-- Dependence has a different structure
+-   Dependence has a different structure
 
-- Different notion of “distance”
+-   Different notion of “distance”
 
-- Stationarity means different things
+-   Stationarity means different things
 
-- Causality interpretation is harder in space
+-   Causality interpretation is harder in space
 
-- Different modeling tools
+-   Different modeling tools
 
-- The key conceptual shift
-
+-   The key conceptual shift
 
 ## Example
 
@@ -175,24 +173,18 @@ GIS systems emerged
 
 -   Layer-based spatial analysis
 
--   Integration of maps + data  
+-   Integration of maps + data
 
 ## Modern Era: Spatial + Temporal + Big Data
 
-- Spatio-temporal models
+-   Spatio-temporal models
 
-- Bayesian spatial models
+-   Bayesian spatial models
 
-- Complex systems
+-   Complex systems
 
-- Machine Learning + Spatial
-
-
+-   Machine Learning + Spatial
 
 # why spatial and temporal data require different statistical thinking?
 
 In-class
-
-
-
-

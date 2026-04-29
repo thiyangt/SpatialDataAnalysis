@@ -1,0 +1,144 @@
+---
+title: "Spatial Data Visualisation"
+editor: source
+---
+
+# How do we transform this three-dimensional angular system into a two-dimensional Cartesian system?
+
+Solution: Spatial Projections
+
+## Map Projection
+
+A projection is the geometric transformation from 3D to 2D.
+
+A map projection is a mathematical method used to represent the curved surface of the Earth on a flat map.
+
+Since the Earth is curved and maps are flat, every projection introduces some distortion in one or more of the following:
+
+Area
+Shape
+Distance
+Direction
+
+## [Examples of Map Projections](https://geoawesome.com/5-tools-will-let-master-map-projections/)
+
+- Mercator Projection
+
+  Preserves direction
+  
+  Commonly used for navigation
+  
+  Distorts area near the poles
+
+- Albers Equal-Area Conic
+
+  Preserves area
+  
+  Suitable for thematic maps
+  
+- Goode Homolosine
+
+  Minimizes overall global distortion
+
+# [Types of Map Projections](https://mapscaping.com/understanding_map_projections/)
+
+## [Cylindrical Projections](https://hatefdastour.github.io/notes/Introduction_to_Geospatial_Data_Analytics/chapter_02/GeoData_C02S05.html)
+
+Imagine wrapping a cylinder around the Earth and projecting the surface onto it.
+
+
+## [Conical Projections](https://hatefdastour.github.io/notes/Introduction_to_Geospatial_Data_Analytics/chapter_02/GeoData_C02S06.html)
+
+Imagine wrapping a cone over the Earth.
+
+
+
+## [Planar (Azimuthal) Projections](https://hatefdastour.github.io/notes/Introduction_to_Geospatial_Data_Analytics/chapter_02/GeoData_C02S07.html)
+
+The Earth’s surface is projected onto a flat plane.
+
+# Why Multiple Map Projection Types Exist
+
+The Earth is round, but maps are flat.
+
+No flat map can perfectly preserve all properties of the globe.
+
+Therefore, different projections are designed for different purposes.
+
+# Coordinate Reference System (CRS)
+
+A CRS is a complete spatial reference framework that defines:
+
+    How coordinates relate to the Earth (datum)
+
+    The map projection used (if any)
+
+    The coordinate units and rules
+    
+# What is a Datum?
+
+A datum is a mathematical model of the Earth that defines:
+
+    The size and shape of the Earth
+
+    The origin of the coordinate system
+
+    The orientation of latitude and longitude
+
+In simple terms, a datum tells us where “zero” is.
+
+# Why is Datum Important?
+
+Different datums represent the Earth differently.
+
+Therefore, the same latitude and longitude may refer to slightly different physical locations.
+
+# Projection vs CRS
+
+**Projection**
+
+Method used to flatten the Earth
+
+**CRS**
+
+Full system that includes:
+
+Datum
+
+Projection
+
+Coordinate rules
+
+**Simple Idea**
+
+Projection is part of CRS.
+
+# Simple Features (sf)
+
+The sf package stands for simple features.
+
+It provides a modern and consistent way to handle spatial vector data in R.
+
+## Advantages of sf
+
+Easy to use with ggplot2
+
+Tidyverse-friendly
+
+Supports points, lines, and polygons
+
+Works well with shapefiles and GIS software
+
+## Shapefile
+
+Vector data are typically stored in formats such as shapefiles (.shp) or geopackages (.gpkg). The sf (simple features) package in R is the most common tool for handling vector data.
+
+A shapefile is a popular geospatial vector data format used to store geographic features like points, lines, and polygons, along with their attributes. It’s commonly used in GIS (Geographic Information Systems) and mapping software, including R (sf or rgdal packages). A shapefile actually consists of several files that work together. The main ones are: 
+
+| File Extension | Purpose | 
+|----------------|---------|
+| .shp | Geometry of features (points, lines, polygons) |
+| .shx | Shape index (helps software find features quickly) |
+| .dbf | Attribute data (like a spreadsheet) | 
+| .prj | Projection information (coordinate reference system) | 
+| .cpg | Encoding of text attributes (optional) |
