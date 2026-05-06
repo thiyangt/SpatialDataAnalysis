@@ -5,7 +5,7 @@ editor: source
 
 # Lab 1
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(sf)
 library(ggplot2)
 pak::pak("thiyangt/SriLanka")
@@ -19,7 +19,7 @@ ggplot(lka_adm0) +
 
 ## Exercise 2.1
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(sf)
 library(rnaturalearth)
@@ -34,7 +34,7 @@ world
 
 Sinusoidal Projection
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 ggplot(data = world) +
   geom_sf() +
   labs(
@@ -58,3 +58,60 @@ Robinson Projection: coord_sf(crs = st_crs("ESRI:54030"))
 Cleck [here](https://static.lib.virginia.edu/statlab/materials/data/VirginiaBoundary.zip) to download data.
 
 Spatial Data Wrangling: In-class
+
+# Lab 3: IDW with `meuse`
+
+```{r, warning=FALSE, message=FALSE}
+library(sp)
+library(sf)
+library(leaflet)
+library(gstat)
+
+data(meuse)
+head(meuse)
+meuse_sf <- st_as_sf(meuse, coords = c("x", "y"), crs = 28992)
+meuse_sf <- st_transform(meuse_sf, 4326)
+leaflet(meuse_sf) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    radius = 5,
+    color = "blue",
+    stroke = FALSE,
+    fillOpacity = 0.7,
+    popup = ~paste0(
+      "Zinc: ", zinc, "<br>",
+      "Copper: ", copper, "<br>",
+      "Lead: ", lead
+    )
+  )
+```
+
+Draw Leaflet map with zinc coloring
+
+```{r, warning=FALSE, message=FALSE}
+pal <- colorNumeric(
+  palette = "YlOrRd",
+  domain = meuse_sf$zinc
+)
+
+leaflet(meuse_sf) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    radius = 6,
+    color = ~pal(zinc),
+    fillOpacity = 0.8,
+    stroke = FALSE,
+    popup = ~paste0(
+      "Zinc: ", zinc, "<br>",
+      "Lead: ", lead, "<br>",
+      "Copper: ", copper
+    )
+  ) %>%
+  addLegend(
+    pal = pal,
+    values = ~zinc,
+    title = "Zinc concentration",
+    opacity = 1
+  )
+
+```

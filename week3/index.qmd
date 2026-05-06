@@ -1,0 +1,73 @@
+---
+title: "Inverse Distance Weighting (IDW) in Spatial Analysis"
+editor: "source"
+---
+
+
+## Introduction
+
+Inverse Distance Weighting (IDW) is a deterministic spatial interpolation technique used to estimate values at unsampled locations based on nearby observed data points.
+
+The fundamental assumption is that:
+
+> Points that are closer in space have more influence on the estimated value than points that are farther away.
+
+This method is widely used in environmental and geospatial analysis for variables such as rainfall, temperature, soil nutrients, and pollution levels.
+
+
+
+## IDW Formula
+
+The IDW estimator is defined as:
+
+
+The IDW estimator is given by:
+
+$$
+\hat{z}(s_0) =
+\frac{\sum_{i=1}^{n} \frac{z(s_i)}{d(s_i, s_0)^p}}
+{\sum_{i=1}^{n} \frac{1}{d(s_i, s_0)^p}}
+$$
+
+where:
+
+- $\hat{z}(s_0)$ = estimated value at location $s_0$
+- $z(s_i)$ = observed value at known location $s_i$
+- $d(s_i, s_0)$ = distance between known point and prediction location
+- $p$ = power parameter (commonly 1 or 2)
+- $n$ = number of nearby observed points
+
+
+
+## Method Description
+
+IDW works by:
+
+1. Identifying nearby sample points
+2. Calculating distance from each point to the target location
+3. Assigning weights inversely proportional to distance
+4. Computing a weighted average of known values
+
+The influence of a point decreases rapidly as distance increases.
+
+
+## Advantages of IDW
+
+- Simple and easy to implement  
+- Computationally efficient  
+- Deterministic (same input → same output)  
+- No need for statistical model fitting  
+- Works well with dense and evenly distributed data  
+
+
+## Disadvantages of IDW
+
+- No measure of prediction uncertainty  
+- Sensitive to clustering of points  
+- Results depend heavily on the choice of power parameter \( p \)  
+- Assumes only distance matters (no direction or barriers)  
+- Poor performance in sparse data regions  
+- Edge effects near boundaries  
+
+
+While it is useful for exploratory spatial analysis, it is less robust than geostatistical methods like kriging when uncertainty estimation or complex spatial structure is important.

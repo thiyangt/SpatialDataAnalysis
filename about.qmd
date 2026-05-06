@@ -10,3 +10,7 @@ editor: source
 ## Week 2: 29 April 2026
 
 [Spatial Data Visualisation](/week2/index.html)
+
+## Week 3: 7 May 2026
+
+[IDW](/week3/index.html)
