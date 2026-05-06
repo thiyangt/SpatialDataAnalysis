@@ -14,3 +14,8 @@ editor: source
 ## Week 3: 7 May 2026
 
 [IDW](/week3/index.html)
+
+Task: Predict temperature for unobserved locations
+
+![](/week1/sltemperature.jpg)
+
