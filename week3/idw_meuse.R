@@ -15,6 +15,27 @@ coordinates(meuse) <- ~x+y
 coordinates(meuse.grid) <- ~x+y
 gridded(meuse.grid) <- TRUE
 
+##    Plot the grid
+data(meuse.grid)
+coords <- as.data.frame(meuse.grid)[, c("x", "y")]
+ggplot(coords, aes(x = x, y = y)) +
+  geom_point(size = 0.5, color = "black") +
+  coord_equal() +
+  theme_minimal() +
+  labs(title = "Grid structure (meuse dataset)")
+
+meuse_df <- as.data.frame(meuse)
+ggplot() +
+  geom_point(data = coords,
+             aes(x = x, y = y),
+             size = 0.5, color = "black") +
+  geom_point(data = meuse_df,
+             aes(x = x, y = y),
+             color = "red", size = 2) +
+  coord_equal() +
+  theme_minimal() +
+  labs(title = "Grid structure with Meuse sampling points")
+
 # Perform IDW interpolation
 idw.out <- idw(zinc ~ 1, meuse, meuse.grid, idp = 2.0)
 

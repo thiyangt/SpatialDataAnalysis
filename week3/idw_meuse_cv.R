@@ -3,7 +3,9 @@ library(gstat)
 
 data(meuse)
 dim(meuse)
-coordinates(meuse) <- ~x+y
+coordinates(meuse) <- ~x+y# Convert to spatial objects
+coordinates(meuse.grid) <- ~x+y # treat (x, y) as center coordinates of each grid cell
+gridded(meuse.grid) <- TRUE # Interpret these points as a regular grid, not just scattered locations.
 
 idw_model <- gstat(
   formula = zinc ~ 1,
