@@ -19,3 +19,6 @@ Task: Predict temperature for unobserved locations
 
 ![](/week1/sltemperature.jpg)
 
+## Week 4: 14 May 2026
+
+[Spatial Statistics](/week4/index.html)

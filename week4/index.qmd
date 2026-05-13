@@ -1,0 +1,73 @@
+---
+title: "Spatial Statistics"
+editor: "source"
+---
+
+
+## Spatial Stochastic Processes
+
+A spatial stochastic process is a family of random variables $$\{Z(s): s \in D\ \subset \mathbb{R}^d \}.$$
+
+Here, 
+
+$D$ is the spatial domain in which observations could be made and 
+
+$Z(s)$ is a random variable representing the quantity  that you measured at location $s$.
+
+
+A spatial stochastic process is a family of random variables $$\{Z(s): s \in D\}.$$
+
+
+## Three types of spatial processes
+
+1. Geostatistical processes: 
+
+   In theory the process could be observed at **infinitely many locations** in $S \in D$.
+   
+   Example: Air temperature in Sri Lanka
+
+2. Areal process
+    
+      Here $D$ is divided into on-overlapping sub regions such as $D = {B_1, B_2,...B_n}$ where $B_i$ is the $i^{th}$ sub region.
+  
+    
+    Example: Total number of dengue cases in each district in Sri Lanka
+ 
+3. Point process
+
+    The process can be observed only at specific locations in $S \in D$.
+  
+    Example: Tree volume of sandalwood trees in Sri Lanka
+    
+## Tobler’s First Law of Geography
+
+Everything is related to everything else, but near things are more related than distant things.
+
+## Weakly Stationary
+
+In-class
+
+## Strictly Stationary
+
+In-class
+
+## isotropic
+
+1. What is isotropic?
+  
+   The correlation between any two observations depends only on the **distance between those locations** and not on their relative direction (directionally invariant).
+
+
+2. Why is isotropic important in spatial data analysis?
+
+   This assumption simplifies analysis and modeling processes.
+
+## Geostatistical Theory
+
+- Mean
+
+- Variance
+
+- Autocovariance
+
+- Autocorrelation
