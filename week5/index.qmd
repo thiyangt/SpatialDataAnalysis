@@ -1,0 +1,128 @@
+---
+title: "Spatial Neighbours"
+---
+
+# Tobler’s First Law of Geography
+
+“Everything is related to everything else, but near things are more related than distant things.”
+— Waldo Tobler, 1970
+
+In simple words, objects or phenomena that are closer together in space tend to be more similar or more strongly related than those far apart.
+
+**Example:**
+
+Temperature readings in neighboring cities are more similar than readings in cities far apart.
+
+Houses near a park may have similar property values compared to houses far from the park.
+
+# Why it is important
+
+Tobler’s Law is fundamental to spatial analysis because it explains why:
+
+1. Spatial autocorrelation exists
+
+  Values at nearby locations are not independent.
+
+  This is a key assumption in geostatistics, spatial regression, and kriging.
+
+2. We can predict values at unobserved locations
+Using nearby observations, we can interpolate or estimate missing values.
+
+  Example: estimating rainfall at a location using nearby weather stations.
+
+3. Spatial patterns are meaningful
+
+  Clustering, hotspots, and diffusion patterns occur because near things are more related.
+
+  Example: disease outbreaks, crime hotspots, deforestation.
+
+4. It guides sampling and modeling
+
+Knowing that nearby points are correlated helps design surveys and spatial models efficiently.
+Reduces redundancy and improves predictions.
+
+# What are Spatial Neighbours?
+
+In spatial analysis, spatial neighbours are locations or regions that are considered “close” or related in space.
+
+The idea is that nearby locations are more likely to influence each other—this is directly related to Tobler’s First Law of Geography: “near things are more related than distant things.”
+
+# Types of Spatial Neighbours
+
+1. Contiguity-based neighbours
+
+  Two regions are neighbours if they share a common boundary (or vertex).
+
+  Rook criterion: Share a common edge.
+
+  Queen criterion: Share an edge or a vertex.
+
+  Example: Two adjacent districts in a country.
+
+2. Distance-based neighbours
+
+  Two locations are neighbours if the distance between them is below a threshold.
+
+  Example: Weather stations within 10 km of each other.
+
+3. k-nearest neighbours
+
+  Each location is connected to its k closest locations, regardless of actual distance threshold.
+
+# Why Spatial Neighbours Matter?
+
+They capture spatial dependence in data.
+
+They are used to create spatial weight matrices,
+which are central in:
+
+  Spatial regression (spatial lag, spatial error models)
+    
+  Moran’s I and other spatial autocorrelation measures
+    
+  Predictive modelling and kriging
+
+# Practical Session with R
+
+## Packages
+
+```{r}
+library(spdep)
+library(sf)
+```
+
+## Data
+
+```{r, echo=TRUE}
+columbus <- st_read(system.file("shapes/columbus.gpkg", package="spData")[1], quiet=TRUE)
+columbus
+```
+
+## Explore data structure
+
+```{r, echo=TRUE}
+st_crs(columbus)
+
+```
+
+```{r, echo=TRUE}
+sf::st_geometry(columbus)
+
+```
+
+## Visualise data
+
+`st_geometry()` is an `sf` function that extracts only the geometry from an sf object.
+
+```{r, echo=TRUE}
+st_geometry(columbus)
+```
+
+```{r, echo=TRUE}
+plot(st_geometry(columbus))
+```
+```
+
+In-class
+
+Calculate neighbours
