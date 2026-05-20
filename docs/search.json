@@ -32,7 +32,7 @@
     "href": "week5/index.html#visualise-data",
     "title": "Spatial Neighbours",
     "section": "Visualise data",
-    "text": "Visualise data\nst_geometry() is an sf function that extracts only the geometry from an sf object.\n\nst_geometry(columbus)\n\nGeometry set for 49 features \nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: 5.874907 ymin: 10.78863 xmax: 11.28742 ymax: 14.74245\nProjected CRS: Undefined Cartesian SRS with unknown unit\nFirst 5 geometries:\n\n\nPOLYGON ((8.624129 14.23698, 8.5597 14.74245, 8...\n\n\nPOLYGON ((8.25279 14.23694, 8.282758 14.22994, ...\n\n\nPOLYGON ((8.653305 14.00809, 8.81814 14.00205, ...\n\n\nPOLYGON ((8.459499 13.82035, 8.473408 13.83227,...\n\n\nPOLYGON ((8.685274 13.63952, 8.677577 13.72221,...\n\n\n\nplot(st_geometry(columbus))\n\n\n\n\n\n\n\n\n```\nIn-class\nCalculate neighbours"
+    "text": "Visualise data\nst_geometry() is an sf function that extracts only the geometry from an sf object.\n\nst_geometry(columbus)\n\nGeometry set for 49 features \nGeometry type: POLYGON\nDimension:     XY\nBounding box:  xmin: 5.874907 ymin: 10.78863 xmax: 11.28742 ymax: 14.74245\nProjected CRS: Undefined Cartesian SRS with unknown unit\nFirst 5 geometries:\n\n\nPOLYGON ((8.624129 14.23698, 8.5597 14.74245, 8...\n\n\nPOLYGON ((8.25279 14.23694, 8.282758 14.22994, ...\n\n\nPOLYGON ((8.653305 14.00809, 8.81814 14.00205, ...\n\n\nPOLYGON ((8.459499 13.82035, 8.473408 13.83227,...\n\n\nPOLYGON ((8.685274 13.63952, 8.677577 13.72221,...\n\n\n\nplot(st_geometry(columbus))\n\n\n\n\n\n\n\n\n```\nIn-class\nCalculate neighbors"
   },
   {
     "objectID": "week3/index.html",

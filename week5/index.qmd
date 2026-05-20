@@ -122,4 +122,10 @@ plot(st_geometry(columbus))
 
 In-class
 
-Calculate neighbours
+Calculate neighbors
+
+## 
+
+# Higher-order Spatial Neighbour
+
+In-class
