@@ -129,3 +129,7 @@ Calculate neighbors
 # Higher-order Spatial Neighbour
 
 In-class
+
+# Neighborhood matrix
+
+in-class
