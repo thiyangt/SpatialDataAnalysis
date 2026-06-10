@@ -11,7 +11,7 @@
     "href": "week5/index.html#packages",
     "title": "Spatial Neighbours",
     "section": "Packages",
-    "text": "Packages\n\nlibrary(spdep)\n\nLoading required package: spData\n\n\nTo access larger datasets in this package, install the spDataLarge\npackage with: `install.packages('spDataLarge',\nrepos='https://nowosad.github.io/drat/', type='source')`\n\n\nLoading required package: sf\n\n\nLinking to GEOS 3.13.1, GDAL 3.10.2, PROJ 9.5.1; sf_use_s2() is TRUE\n\nlibrary(sf)"
+    "text": "Packages\n\nlibrary(spdep)\n\nLoading required package: spData\n\n\nTo access larger datasets in this package, install the spDataLarge\npackage with: `install.packages('spDataLarge',\nrepos='https://nowosad.github.io/drat/', type='source')`\n\n\nLoading required package: sf\n\n\nLinking to GEOS 3.14.1, GDAL 3.12.1, PROJ 9.7.1; sf_use_s2() is TRUE\n\nlibrary(sf)"
   },
   {
     "objectID": "week5/index.html#data",
@@ -236,6 +236,13 @@
     "title": "About",
     "section": "Week 5: 21 May 2026",
     "text": "Week 5: 21 May 2026\nSpatial Neighbours"
+  },
+  {
+    "objectID": "about.html#week-6-11-june-2026",
+    "href": "about.html#week-6-11-june-2026",
+    "title": "About",
+    "section": "Week 6: 11 June 2026",
+    "text": "Week 6: 11 June 2026\nSpatial Data Science"
   },
   {
     "objectID": "index.html",
