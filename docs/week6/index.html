@@ -1,0 +1,2886 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Introduction to Kriging and Spatial Interpolation Using R – Spatial Data Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="../site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Spatial Data Analysis</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#concept-of-kriging" id="toc-concept-of-kriging" class="nav-link active" data-scroll-target="#concept-of-kriging">Concept of Kriging</a></li>
+  <li><a href="#basic-idea-of-kriging" id="toc-basic-idea-of-kriging" class="nav-link" data-scroll-target="#basic-idea-of-kriging">Basic Idea of Kriging</a>
+  <ul class="collapse">
+  <li><a href="#properties-of-kriging" id="toc-properties-of-kriging" class="nav-link" data-scroll-target="#properties-of-kriging">Properties of Kriging</a></li>
+  </ul></li>
+  <li><a href="#kriging-variance" id="toc-kriging-variance" class="nav-link" data-scroll-target="#kriging-variance">Kriging Variance</a>
+  <ul class="collapse">
+  <li><a href="#types-of-kriging" id="toc-types-of-kriging" class="nav-link" data-scroll-target="#types-of-kriging">Types of Kriging</a></li>
+  </ul></li>
+  <li><a href="#kriging-weights-for-different-kriging-approaches" id="toc-kriging-weights-for-different-kriging-approaches" class="nav-link" data-scroll-target="#kriging-weights-for-different-kriging-approaches">Kriging Weights for Different Kriging Approaches</a>
+  <ul class="collapse">
+  <li><a href="#ordinary-kriging-ok" id="toc-ordinary-kriging-ok" class="nav-link" data-scroll-target="#ordinary-kriging-ok">Ordinary Kriging (OK)</a></li>
+  <li><a href="#simple-kriging-sk" id="toc-simple-kriging-sk" class="nav-link" data-scroll-target="#simple-kriging-sk">Simple Kriging (SK)</a></li>
+  <li><a href="#universal-kriging-uk" id="toc-universal-kriging-uk" class="nav-link" data-scroll-target="#universal-kriging-uk">Universal Kriging (UK)</a></li>
+  <li><a href="#regression-kriging-rk" id="toc-regression-kriging-rk" class="nav-link" data-scroll-target="#regression-kriging-rk">Regression Kriging (RK)</a></li>
+  <li><a href="#summary-of-weight-constraints" id="toc-summary-of-weight-constraints" class="nav-link" data-scroll-target="#summary-of-weight-constraints">Summary of Weight Constraints</a></li>
+  </ul></li>
+  <li><a href="#application-with-meuse-data" id="toc-application-with-meuse-data" class="nav-link" data-scroll-target="#application-with-meuse-data">Application with meuse data</a></li>
+  <li><a href="#assessing-spatial-trends-and-achieving-stationarity-for-geostatistical-modelling" id="toc-assessing-spatial-trends-and-achieving-stationarity-for-geostatistical-modelling" class="nav-link" data-scroll-target="#assessing-spatial-trends-and-achieving-stationarity-for-geostatistical-modelling">Assessing Spatial Trends and Achieving Stationarity for Geostatistical Modelling</a>
+  <ul class="collapse">
+  <li><a href="#introduction-to-spatial-stationarity" id="toc-introduction-to-spatial-stationarity" class="nav-link" data-scroll-target="#introduction-to-spatial-stationarity">Introduction to Spatial Stationarity</a></li>
+  <li><a href="#visual-assessment-of-spatial-trends-in-zinc-concentration" id="toc-visual-assessment-of-spatial-trends-in-zinc-concentration" class="nav-link" data-scroll-target="#visual-assessment-of-spatial-trends-in-zinc-concentration">Visual Assessment of Spatial Trends in Zinc Concentration</a></li>
+  <li><a href="#why-is-a-linear-relationship-important" id="toc-why-is-a-linear-relationship-important" class="nav-link" data-scroll-target="#why-is-a-linear-relationship-important">Why is a Linear Relationship Important?</a></li>
+  </ul></li>
+  <li><a href="#r-illustration-showing-three-spatial-situations" id="toc-r-illustration-showing-three-spatial-situations" class="nav-link" data-scroll-target="#r-illustration-showing-three-spatial-situations">R illustration showing three spatial situations:</a>
+  <ul class="collapse">
+  <li><a href="#variogram-cloud-and-h-scatterplot" id="toc-variogram-cloud-and-h-scatterplot" class="nav-link" data-scroll-target="#variogram-cloud-and-h-scatterplot">Variogram Cloud and h-Scatterplot</a></li>
+  <li><a href="#variogram-cloud" id="toc-variogram-cloud" class="nav-link" data-scroll-target="#variogram-cloud">Variogram Cloud</a>
+  <ul class="collapse">
+  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation">Interpretation</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#h-scatterplot" id="toc-h-scatterplot" class="nav-link" data-scroll-target="#h-scatterplot">h-Scatterplot</a>
+  <ul class="collapse">
+  <li><a href="#interpretation-1" id="toc-interpretation-1" class="nav-link" data-scroll-target="#interpretation-1">Interpretation</a></li>
+  <li><a href="#relationship-between-h-scatterplot-and-variogram" id="toc-relationship-between-h-scatterplot-and-variogram" class="nav-link" data-scroll-target="#relationship-between-h-scatterplot-and-variogram">Relationship between h-Scatterplot and Variogram</a></li>
+  <li><a href="#comparison-of-variogram-cloud-and-h-scatterplot" id="toc-comparison-of-variogram-cloud-and-h-scatterplot" class="nav-link" data-scroll-target="#comparison-of-variogram-cloud-and-h-scatterplot">Comparison of Variogram Cloud and h-Scatterplot</a></li>
+  </ul></li>
+  <li><a href="#lagged-scatter-plot" id="toc-lagged-scatter-plot" class="nav-link" data-scroll-target="#lagged-scatter-plot">Lagged Scatter plot</a></li>
+  <li><a href="#variogram-cloud-1" id="toc-variogram-cloud-1" class="nav-link" data-scroll-target="#variogram-cloud-1">Variogram Cloud</a>
+  <ul class="collapse">
+  <li><a href="#variogram-map-for-assessing-directional-dependence-anisotropy-variogram-map" id="toc-variogram-map-for-assessing-directional-dependence-anisotropy-variogram-map" class="nav-link" data-scroll-target="#variogram-map-for-assessing-directional-dependence-anisotropy-variogram-map">Variogram Map for Assessing Directional Dependence (Anisotropy Variogram Map )</a></li>
+  <li><a href="#construction-of-a-variogram-map" id="toc-construction-of-a-variogram-map" class="nav-link" data-scroll-target="#construction-of-a-variogram-map">Construction of a Variogram Map</a></li>
+  <li><a href="#symmetry-of-the-variogram-map" id="toc-symmetry-of-the-variogram-map" class="nav-link" data-scroll-target="#symmetry-of-the-variogram-map">Symmetry of the Variogram Map</a></li>
+  <li><a href="#interpreting-a-variogram-map" id="toc-interpreting-a-variogram-map" class="nav-link" data-scroll-target="#interpreting-a-variogram-map">Interpreting a Variogram Map</a></li>
+  <li><a href="#detecting-anisotropy" id="toc-detecting-anisotropy" class="nav-link" data-scroll-target="#detecting-anisotropy">Detecting Anisotropy</a></li>
+  <li><a href="#example-meuse-zinc-data" id="toc-example-meuse-zinc-data" class="nav-link" data-scroll-target="#example-meuse-zinc-data">Example: Meuse Zinc Data</a></li>
+  <li><a href="#r-code-variogram-map" id="toc-r-code-variogram-map" class="nav-link" data-scroll-target="#r-code-variogram-map">R Code: Variogram Map</a></li>
+  <li><a href="#cutoff-and-width-parameters-in-a-variogram-map" id="toc-cutoff-and-width-parameters-in-a-variogram-map" class="nav-link" data-scroll-target="#cutoff-and-width-parameters-in-a-variogram-map">Cutoff and Width Parameters in a Variogram Map</a></li>
+  <li><a href="#cutoff" id="toc-cutoff" class="nav-link" data-scroll-target="#cutoff">1. Cutoff</a>
+  <ul class="collapse">
+  <li><a href="#effect-of-changing-cutoff" id="toc-effect-of-changing-cutoff" class="nav-link" data-scroll-target="#effect-of-changing-cutoff">Effect of changing cutoff</a></li>
+  </ul></li>
+  <li><a href="#width" id="toc-width" class="nav-link" data-scroll-target="#width">2. Width</a></li>
+  <li><a href="#relationship-between-cutoff-and-width" id="toc-relationship-between-cutoff-and-width" class="nav-link" data-scroll-target="#relationship-between-cutoff-and-width">Relationship Between Cutoff and Width</a></li>
+  <li><a href="#interpretation-of-the-variogram-map" id="toc-interpretation-of-the-variogram-map" class="nav-link" data-scroll-target="#interpretation-of-the-variogram-map">Interpretation of the Variogram Map</a></li>
+  </ul></li>
+  <li><a href="#choosing-cutoff-and-width-values" id="toc-choosing-cutoff-and-width-values" class="nav-link" data-scroll-target="#choosing-cutoff-and-width-values">Choosing Cutoff and Width Values</a>
+  <ul class="collapse">
+  <li><a href="#fine-resolution" id="toc-fine-resolution" class="nav-link" data-scroll-target="#fine-resolution">Fine resolution</a></li>
+  <li><a href="#moderate-resolution" id="toc-moderate-resolution" class="nav-link" data-scroll-target="#moderate-resolution">Moderate resolution</a></li>
+  <li><a href="#coarse-resolution" id="toc-coarse-resolution" class="nav-link" data-scroll-target="#coarse-resolution">Coarse resolution</a></li>
+  </ul></li>
+  <li><a href="#values-plotted-in-a-variogram-map-cell" id="toc-values-plotted-in-a-variogram-map-cell" class="nav-link" data-scroll-target="#values-plotted-in-a-variogram-map-cell">Values Plotted in a Variogram Map Cell</a>
+  <ul class="collapse">
+  <li><a href="#aggregating-values-within-a-grid-cell" id="toc-aggregating-values-within-a-grid-cell" class="nav-link" data-scroll-target="#aggregating-values-within-a-grid-cell">Aggregating Values Within a Grid Cell</a></li>
+  <li><a href="#example" id="toc-example" class="nav-link" data-scroll-target="#example">Example</a></li>
+  <li><a href="#minimum-number-of-pairs" id="toc-minimum-number-of-pairs" class="nav-link" data-scroll-target="#minimum-number-of-pairs">Minimum Number of Pairs</a></li>
+  <li><a href="#interpretation-2" id="toc-interpretation-2" class="nav-link" data-scroll-target="#interpretation-2">Interpretation</a></li>
+  </ul></li>
+  <li><a href="#basic-variogram-models" id="toc-basic-variogram-models" class="nav-link" data-scroll-target="#basic-variogram-models">Basic Variogram Models</a>
+  <ul class="collapse">
+  <li><a href="#omnidirectional-variogram" id="toc-omnidirectional-variogram" class="nav-link" data-scroll-target="#omnidirectional-variogram">Omnidirectional Variogram</a></li>
+  <li><a href="#calculation-of-omnidirectional-variogram" id="toc-calculation-of-omnidirectional-variogram" class="nav-link" data-scroll-target="#calculation-of-omnidirectional-variogram">Calculation of Omnidirectional Variogram</a></li>
+  <li><a href="#interpretation-3" id="toc-interpretation-3" class="nav-link" data-scroll-target="#interpretation-3">Interpretation</a>
+  <ul class="collapse">
+  <li><a href="#positive-spatial-autocorrelation" id="toc-positive-spatial-autocorrelation" class="nav-link" data-scroll-target="#positive-spatial-autocorrelation">Positive spatial autocorrelation</a></li>
+  <li><a href="#spatial-independence" id="toc-spatial-independence" class="nav-link" data-scroll-target="#spatial-independence">Spatial independence</a></li>
+  <li><a href="#trend-effect" id="toc-trend-effect" class="nav-link" data-scroll-target="#trend-effect">Trend effect</a></li>
+  </ul></li>
+  <li><a href="#r-example-omnidirectional-variogram" id="toc-r-example-omnidirectional-variogram" class="nav-link" data-scroll-target="#r-example-omnidirectional-variogram">R Example: Omnidirectional Variogram</a></li>
+  <li><a href="#width-parameter-in-an-omnidirectional-variogram" id="toc-width-parameter-in-an-omnidirectional-variogram" class="nav-link" data-scroll-target="#width-parameter-in-an-omnidirectional-variogram">Width Parameter in an Omnidirectional Variogram</a></li>
+  <li><a href="#meaning-of-width" id="toc-meaning-of-width" class="nav-link" data-scroll-target="#meaning-of-width">Meaning of Width</a></li>
+  <li><a href="#semivariance-calculation" id="toc-semivariance-calculation" class="nav-link" data-scroll-target="#semivariance-calculation">Semivariance Calculation</a></li>
+  <li><a href="#relationship-between-cutoff-and-width-1" id="toc-relationship-between-cutoff-and-width-1" class="nav-link" data-scroll-target="#relationship-between-cutoff-and-width-1">Relationship Between Cutoff and Width</a></li>
+  <li><a href="#effect-of-changing-width" id="toc-effect-of-changing-width" class="nav-link" data-scroll-target="#effect-of-changing-width">Effect of Changing Width</a>
+  <ul class="collapse">
+  <li><a href="#smaller-width" id="toc-smaller-width" class="nav-link" data-scroll-target="#smaller-width">Smaller Width</a></li>
+  <li><a href="#larger-width" id="toc-larger-width" class="nav-link" data-scroll-target="#larger-width">Larger Width</a></li>
+  </ul></li>
+  <li><a href="#interpretation-4" id="toc-interpretation-4" class="nav-link" data-scroll-target="#interpretation-4">Interpretation</a></li>
+  <li><a href="#omnidirectional-vs-directional-variogram" id="toc-omnidirectional-vs-directional-variogram" class="nav-link" data-scroll-target="#omnidirectional-vs-directional-variogram">Omnidirectional vs Directional Variogram</a></li>
+  <li><a href="#fitting-an-omnidirectional-variogram" id="toc-fitting-an-omnidirectional-variogram" class="nav-link" data-scroll-target="#fitting-an-omnidirectional-variogram">Fitting an Omnidirectional Variogram</a></li>
+  <li><a href="#load-data-and-convert-to-sf-object" id="toc-load-data-and-convert-to-sf-object" class="nav-link" data-scroll-target="#load-data-and-convert-to-sf-object">Load Data and Convert to sf Object</a></li>
+  <li><a href="#calculate-omnidirectional-empirical-variogram" id="toc-calculate-omnidirectional-empirical-variogram" class="nav-link" data-scroll-target="#calculate-omnidirectional-empirical-variogram">Calculate Omnidirectional Empirical Variogram</a></li>
+  <li><a href="#define-initial-variogram-model" id="toc-define-initial-variogram-model" class="nav-link" data-scroll-target="#define-initial-variogram-model">Define Initial Variogram Model</a></li>
+  <li><a href="#fit-spherical-variogram-model" id="toc-fit-spherical-variogram-model" class="nav-link" data-scroll-target="#fit-spherical-variogram-model">Fit Spherical Variogram Model</a></li>
+  <li><a href="#plot-fitted-variogram" id="toc-plot-fitted-variogram" class="nav-link" data-scroll-target="#plot-fitted-variogram">Plot Fitted Variogram</a></li>
+  <li><a href="#interpretation-of-the-fitted-model" id="toc-interpretation-of-the-fitted-model" class="nav-link" data-scroll-target="#interpretation-of-the-fitted-model">Interpretation of the Fitted Model</a></li>
+  <li><a href="#interpretation-of-the-fitted-omnidirectional-variogram-model" id="toc-interpretation-of-the-fitted-omnidirectional-variogram-model" class="nav-link" data-scroll-target="#interpretation-of-the-fitted-omnidirectional-variogram-model">Interpretation of the Fitted Omnidirectional Variogram Model</a></li>
+  <li><a href="#nugget-effect" id="toc-nugget-effect" class="nav-link" data-scroll-target="#nugget-effect">Nugget Effect</a></li>
+  <li><a href="#spherical-component" id="toc-spherical-component" class="nav-link" data-scroll-target="#spherical-component">Spherical Component</a></li>
+  <li><a href="#total-sill" id="toc-total-sill" class="nav-link" data-scroll-target="#total-sill">Total Sill</a></li>
+  <li><a href="#strength-of-spatial-dependence" id="toc-strength-of-spatial-dependence" class="nav-link" data-scroll-target="#strength-of-spatial-dependence">Strength of Spatial Dependence</a></li>
+  <li><a href="#overall-interpretation" id="toc-overall-interpretation" class="nav-link" data-scroll-target="#overall-interpretation">Overall Interpretation</a></li>
+  <li><a href="#why-omnidirectional-variogram-can-be-misleading" id="toc-why-omnidirectional-variogram-can-be-misleading" class="nav-link" data-scroll-target="#why-omnidirectional-variogram-can-be-misleading">Why Omnidirectional Variogram Can Be Misleading</a></li>
+  <li><a href="#detecting-anisotropy-1" id="toc-detecting-anisotropy-1" class="nav-link" data-scroll-target="#detecting-anisotropy-1">Detecting Anisotropy</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#distinguishing-between-isotropy-and-anisotropy" id="toc-distinguishing-between-isotropy-and-anisotropy" class="nav-link" data-scroll-target="#distinguishing-between-isotropy-and-anisotropy">Distinguishing Between Isotropy and Anisotropy</a></li>
+  <li><a href="#types-of-anisotropy" id="toc-types-of-anisotropy" class="nav-link" data-scroll-target="#types-of-anisotropy">Types of Anisotropy</a></li>
+  <li><a href="#geometric-anisotropy" id="toc-geometric-anisotropy" class="nav-link" data-scroll-target="#geometric-anisotropy">1. Geometric Anisotropy</a></li>
+  <li><a href="#zonal-anisotropy" id="toc-zonal-anisotropy" class="nav-link" data-scroll-target="#zonal-anisotropy">2. Zonal Anisotropy</a></li>
+  <li><a href="#mixed-anisotropy" id="toc-mixed-anisotropy" class="nav-link" data-scroll-target="#mixed-anisotropy">3. Mixed Anisotropy</a></li>
+  <li><a href="#summary-of-anisotropy-types" id="toc-summary-of-anisotropy-types" class="nav-link" data-scroll-target="#summary-of-anisotropy-types">Summary of Anisotropy Types</a></li>
+  </ul></li>
+  <li><a href="#how-to-proceed" id="toc-how-to-proceed" class="nav-link" data-scroll-target="#how-to-proceed">How to proceed</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Introduction to Kriging and Spatial Interpolation Using R</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="concept-of-kriging" class="level1">
+<h1>Concept of Kriging</h1>
+<p><strong>Kriging</strong> is a geostatistical interpolation method that predicts the value of a variable at an unobserved location using a weighted average of nearby observed values. Unlike deterministic interpolation methods such as inverse distance weighting (IDW), kriging explicitly incorporates the spatial correlation among observations through a variogram model.</p>
+<p>The underlying assumption of kriging is that observations located closer together tend to be more similar than those farther apart. This spatial dependence is quantified using the variogram, which describes how similarity decreases with increasing distance.</p>
+<p>Suppose observations are available at <span class="math inline">\(n\)</span> locations, <span class="math inline">\(\mathbf{s}_1, \mathbf{s}_2, \ldots, \mathbf{s}_n\)</span>. The predicted value at an unsampled location <span class="math inline">\(\mathbf{s}_0\)</span> is given by</p>
+<p><span class="math display">\[
+\hat{Z}(\mathbf{s}_0)=\sum_{i=1}^{n}\lambda_i Z(\mathbf{s}_i),
+\]</span></p>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(\hat{Z}(\mathbf{s}_0)\)</span> is the predicted value at location <span class="math inline">\(\mathbf{s}_0\)</span>.</li>
+<li><span class="math inline">\(Z(\mathbf{s}_i)\)</span> is the observed value at location <span class="math inline">\(\mathbf{s}_i\)</span>.</li>
+<li><span class="math inline">\(\lambda_i\)</span> is the weight assigned to the <span class="math inline">\(i\)</span>th observation.</li>
+</ul>
+<p>Unlike deterministic interpolation methods, the kriging weights are <strong>not</strong> determined solely by distance. Instead, they are computed using the spatial covariance (or variogram), so that observations with stronger spatial correlation have greater influence on the prediction.</p>
+</section>
+<section id="basic-idea-of-kriging" class="level1">
+<h1>Basic Idea of Kriging</h1>
+<p>The fundamental idea behind kriging is that a spatial variable can be decomposed into two components:</p>
+<ol type="1">
+<li>A <strong>deterministic trend</strong>, which describes the large-scale variation in the data.</li>
+<li>A <strong>random error (residual)</strong>, which captures the small-scale spatial variation.</li>
+</ol>
+<p>Mathematically, the spatial process can be expressed as</p>
+<p><span class="math display">\[
+Z(\mathbf{s}) = m(\mathbf{s}) + \varepsilon(\mathbf{s}),
+\]</span></p>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(Z(\mathbf{s})\)</span> is the observed value at location <span class="math inline">\(\mathbf{s}\)</span>,</li>
+<li><span class="math inline">\(m(\mathbf{s})\)</span> is the deterministic trend (or mean structure),</li>
+<li><span class="math inline">\(\varepsilon(\mathbf{s})\)</span> is the spatially correlated random error.</li>
+</ul>
+<p>The trend represents systematic variation that can often be explained by location or other explanatory variables. The residual component represents the remaining variation after the trend has been removed.</p>
+<p>The key assumption in kriging is that the residuals are <strong>spatially correlated</strong>, meaning that observations at nearby locations tend to have similar residual values.</p>
+<p>Rather than modeling the observed data directly, kriging models the spatial dependence of the residuals using a <strong>variogram</strong>. The variogram describes how the similarity between residuals decreases as the distance between locations increases.</p>
+<p>The semivariance is defined as</p>
+<p><span class="math display">\[
+\gamma(h)=\frac{1}{2}\operatorname{Var}\left[\varepsilon(\mathbf{s})-\varepsilon(\mathbf{s}+h)\right],
+\]</span></p>
+<p>where <span class="math inline">\(h\)</span> denotes the separation distance (lag) between two locations.</p>
+<p>Once an appropriate variogram model has been fitted to the residuals, it is used to determine the kriging weights. These weights are then used to predict the residual at an unsampled location. Finally, the predicted residual is added back to the estimated trend to obtain the kriging prediction.</p>
+<p>The prediction can therefore be written as</p>
+<p><span class="math display">\[
+\hat{Z}(\mathbf{s}_0)
+=
+\hat{m}(\mathbf{s}_0)
++
+\hat{\varepsilon}(\mathbf{s}_0),
+\]</span></p>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(\hat{m}(\mathbf{s}_0)\)</span> is the estimated trend at the prediction location,</li>
+<li><span class="math inline">\(\hat{\varepsilon}(\mathbf{s}_0)\)</span> is the kriged residual obtained using the fitted variogram.</li>
+</ul>
+<p>This decomposition forms the conceptual foundation of geostatistical interpolation and distinguishes kriging from deterministic interpolation methods such as inverse distance weighting (IDW), which do not explicitly model spatial dependence.</p>
+<section id="properties-of-kriging" class="level2">
+<h2 class="anchored" data-anchor-id="properties-of-kriging">Properties of Kriging</h2>
+<p>Kriging estimates have the following desirable properties:</p>
+<ul>
+<li><strong>Linear:</strong> Predictions are weighted sums of observed values.</li>
+<li><strong>Unbiased:</strong> The expected prediction equals the true value.</li>
+<li><strong>Best (Minimum Variance):</strong> Among all linear unbiased estimators, kriging minimizes the prediction variance.</li>
+</ul>
+<p>These properties are collectively referred to as the <strong>Best Linear Unbiased Predictor (BLUP)</strong>.</p>
+</section>
+</section>
+<section id="kriging-variance" class="level1">
+<h1>Kriging Variance</h1>
+<p>A major advantage of kriging is that it provides both predictions and their associated uncertainty. The kriging variance is given by</p>
+<p><span class="math display">\[
+\sigma_K^2
+=
+\sum_{i=1}^{n}\lambda_i\,\gamma(\mathbf{s}_i,\mathbf{s}_0)
++\mu,
+\]</span></p>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(\sigma_K^2\)</span> is the kriging variance.</li>
+<li><span class="math inline">\(\gamma(\mathbf{s}_i,\mathbf{s}_0)\)</span> is the semivariance between the observed location <span class="math inline">\(\mathbf{s}_i\)</span> and the prediction location <span class="math inline">\(\mathbf{s}_0\)</span>.</li>
+</ul>
+<p>The kriging variance depends on the spatial configuration of the data and the fitted variogram model. It does <strong>not</strong> depend on the observed values themselves.</p>
+<section id="types-of-kriging" class="level2">
+<h2 class="anchored" data-anchor-id="types-of-kriging">Types of Kriging</h2>
+<p>The most commonly used kriging methods are:</p>
+<ul>
+<li><strong>Simple Kriging (SK):</strong> Assumes the population mean is known and constant.</li>
+<li><strong>Ordinary Kriging (OK):</strong> Assumes an unknown but constant local mean.</li>
+<li><strong>Universal Kriging (UK):</strong> Assumes the mean varies spatially according to a deterministic trend.</li>
+<li><strong>Regression Kriging (RK):</strong> Combines regression with kriging of the residuals.</li>
+<li><strong>Co-Kriging:</strong> Uses one or more auxiliary variables that are spatially correlated with the primary variable.</li>
+</ul>
+</section>
+</section>
+<section id="kriging-weights-for-different-kriging-approaches" class="level1">
+<h1>Kriging Weights for Different Kriging Approaches</h1>
+<p>The general kriging estimator is given by</p>
+<p><span class="math inline">\(\hat{Z}(s_0)=\sum_{i=1}^{n}\lambda_i Z(s_i)\)</span></p>
+<p>where <span class="math inline">\(\lambda_i\)</span> are the kriging weights, <span class="math inline">\(Z(s_i)\)</span> are the observed values, and <span class="math inline">\(s_0\)</span> is the prediction location.</p>
+<p>Different kriging approaches use different constraints for the weights.</p>
+<section id="ordinary-kriging-ok" class="level2">
+<h2 class="anchored" data-anchor-id="ordinary-kriging-ok">Ordinary Kriging (OK)</h2>
+<p>Ordinary Kriging assumes that the mean is unknown but constant:</p>
+<p><span class="math inline">\(E[Z(s)] = \mu\)</span></p>
+<p>To ensure an unbiased estimator, the weights must satisfy:</p>
+<p><span class="math inline">\(\sum_{i=1}^{n}\lambda_i = 1\)</span></p>
+<p>The kriging weights are obtained by solving:</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+\gamma_{11} &amp; \cdots &amp; \gamma_{1n} &amp; 1\\
+\vdots &amp; \ddots &amp; \vdots &amp; \vdots\\
+\gamma_{n1} &amp; \cdots &amp; \gamma_{nn} &amp; 1\\
+1 &amp; \cdots &amp; 1 &amp; 0
+\end{bmatrix}
+\begin{bmatrix}
+\lambda_1\\
+\vdots\\
+\lambda_n\\
+\eta
+\end{bmatrix}
+=
+\begin{bmatrix}
+\gamma_{10}\\
+\vdots\\
+\gamma_{n0}\\
+1
+\end{bmatrix}
+\]</span></p>
+<p>where <span class="math inline">\(\eta\)</span> is the Lagrange multiplier.</p>
+<hr>
+</section>
+<section id="simple-kriging-sk" class="level2">
+<h2 class="anchored" data-anchor-id="simple-kriging-sk">Simple Kriging (SK)</h2>
+<p>Simple Kriging assumes that the mean is known:</p>
+<p><span class="math inline">\(E[Z(s)] = \mu\)</span></p>
+<p>There is no constraint that the weights must sum to one.</p>
+<p>The weights are obtained from:</p>
+<p><span class="math inline">\(\mathbf{C}\lambda=\mathbf{c}_0\)</span></p>
+<p>where <span class="math inline">\(\mathbf{C}\)</span> is the covariance matrix between observed locations and <span class="math inline">\(\mathbf{c}_0\)</span> is the covariance vector between observations and the prediction location.</p>
+<p>The weights are obtained from:</p>
+<p><span class="math inline">\(\mathbf{C}\boldsymbol{\lambda}=\mathbf{c}_0\)</span></p>
+<p>where <span class="math inline">\(\mathbf{C}\)</span> is the covariance matrix between observed locations and <span class="math inline">\(\mathbf{c}_0\)</span> is the covariance vector between observations and the prediction location.</p>
+<p>In matrix form,</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+C(s_1,s_1) &amp; C(s_1,s_2) &amp; \cdots &amp; C(s_1,s_n)\\
+C(s_2,s_1) &amp; C(s_2,s_2) &amp; \cdots &amp; C(s_2,s_n)\\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
+C(s_n,s_1) &amp; C(s_n,s_2) &amp; \cdots &amp; C(s_n,s_n)
+\end{bmatrix}
+\begin{bmatrix}
+\lambda_1\\
+\lambda_2\\
+\vdots\\
+\lambda_n
+\end{bmatrix}
+=
+\begin{bmatrix}
+C(s_1,s_0)\\
+C(s_2,s_0)\\
+\vdots\\
+C(s_n,s_0)
+\end{bmatrix}
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(\mathbf{C}\)</span> is the covariance matrix among the observed locations.</li>
+<li><span class="math inline">\(\boldsymbol{\lambda}\)</span> is the vector of kriging weights.</li>
+<li><span class="math inline">\(\mathbf{c}_0\)</span> is the covariance vector between observed locations and the prediction location <span class="math inline">\(s_0\)</span>.</li>
+</ul>
+<hr>
+</section>
+<section id="universal-kriging-uk" class="level2">
+<h2 class="anchored" data-anchor-id="universal-kriging-uk">Universal Kriging (UK)</h2>
+<p>Universal Kriging assumes that the mean varies according to known explanatory variables:</p>
+<p><span class="math inline">\(E[Z(s)] = \sum_{k=1}^{p}\beta_k f_k(s)\)</span></p>
+<p>The weights must satisfy:</p>
+<p><span class="math inline">\(\sum_{i=1}^{n}\lambda_i f_k(s_i)=f_k(s_0)\)</span></p>
+<p>for <span class="math inline">\(k=1,\ldots,p\)</span>.</p>
+<p>For example, if the trend is:</p>
+<p><span class="math inline">\(m(s)=\beta_0+\beta_1x+\beta_2y\)</span></p>
+<p>then the constraints are:</p>
+<p><span class="math inline">\(\sum_i\lambda_i=1\)</span></p>
+<p><span class="math inline">\(\sum_i\lambda_i x_i=x_0\)</span></p>
+<p><span class="math inline">\(\sum_i\lambda_i y_i=y_0\)</span></p>
+<hr>
+</section>
+<section id="regression-kriging-rk" class="level2">
+<h2 class="anchored" data-anchor-id="regression-kriging-rk">Regression Kriging (RK)</h2>
+<p>Regression Kriging separates the trend and the spatial residual:</p>
+<p><span class="math inline">\(Z(s)=m(s)+\varepsilon(s)\)</span></p>
+<p>The prediction is:</p>
+<p><span class="math inline">\(\hat{Z}(s_0)=\hat{m}(s_0)+\sum_i\lambda_i e(s_i)\)</span></p>
+<p>where <span class="math inline">\(e(s_i)\)</span> represents the spatial residuals.</p>
+<p>The residual weights satisfy:</p>
+<p><span class="math inline">\(\sum_i\lambda_i=1\)</span></p>
+<hr>
+</section>
+<section id="summary-of-weight-constraints" class="level2">
+<h2 class="anchored" data-anchor-id="summary-of-weight-constraints">Summary of Weight Constraints</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Mean Assumption</th>
+<th>Weight Constraint</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Simple Kriging</td>
+<td>Known constant mean</td>
+<td>No constraint</td>
+</tr>
+<tr class="even">
+<td>Ordinary Kriging</td>
+<td>Unknown constant mean</td>
+<td><span class="math inline">\(\sum_i\lambda_i=1\)</span></td>
+</tr>
+<tr class="odd">
+<td>Universal Kriging</td>
+<td>Trend-based mean</td>
+<td><span class="math inline">\(\sum_i\lambda_i f_k(s_i)=f_k(s_0)\)</span></td>
+</tr>
+<tr class="even">
+<td>Regression Kriging</td>
+<td>Regression trend + spatial residual</td>
+<td><span class="math inline">\(\sum_i\lambda_i=1\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Therefore, Ordinary Kriging requires the weights to sum to one, while Universal Kriging extends this condition to preserve the underlying trend structure.</p>
+</section>
+</section>
+<section id="application-with-meuse-data" class="level1">
+<h1>Application with meuse data</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(meuse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(meuse.grid)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(meuse.riv)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(meuse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       x      y cadmium copper lead zinc  elev       dist   om ffreq soil lime
+1 181072 333611    11.7     85  299 1022 7.909 0.00135803 13.6     1    1    1
+2 181025 333558     8.6     81  277 1141 6.983 0.01222430 14.0     1    1    1
+3 181165 333537     6.5     68  199  640 7.800 0.10302900 13.0     1    1    1
+4 181298 333484     2.6     81  116  257 7.655 0.19009400  8.0     1    2    0
+5 181307 333330     2.8     48  117  269 7.480 0.27709000  8.7     1    2    0
+6 181390 333260     3.0     61  137  281 7.791 0.36406700  7.8     1    2    0
+  landuse dist.m
+1      Ah     50
+2      Ah     30
+3      Ah    150
+4      Ga    270
+5      Ah    380
+6      Ga    470</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(meuse.grid)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       x      y part.a part.b      dist soil ffreq
+1 181180 333740      1      0 0.0000000    1     1
+2 181140 333700      1      0 0.0000000    1     1
+3 181180 333700      1      0 0.0122243    1     1
+4 181220 333700      1      0 0.0434678    1     1
+5 181100 333660      1      0 0.0000000    1     1
+6 181140 333660      1      0 0.0122243    1     1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(meuse.riv)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         [,1]     [,2]
+[1,] 182003.7 337678.6
+[2,] 182136.6 337569.6
+[3,] 182252.1 337413.6
+[4,] 182314.5 337284.7
+[5,] 182331.5 337122.3
+[6,] 182323.9 336986.2</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert river coordinates matrix to LINESTRING sf object</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>meuse_riv_sf <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_linestring</span>(<span class="fu">as.matrix</span>(meuse.riv)),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">crs =</span> <span class="dv">28992</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>meuse_riv_sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 1 feature 
+Geometry type: LINESTRING
+Dimension:     XY
+Bounding box:  xmin: 178304 ymin: 325698.5 xmax: 182331.5 ymax: 337684.8
+Projected CRS: Amersfoort / RD New</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>LINESTRING (182003.7 337678.6, 182136.6 337569....</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>meuse_riv_sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">geometry =</span> meuse_riv_sf</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>meuse_riv_sf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 1 feature and 0 fields
+Geometry type: LINESTRING
+Dimension:     XY
+Bounding box:  xmin: 178304 ymin: 325698.5 xmax: 182331.5 ymax: 337684.8
+Projected CRS: Amersfoort / RD New
+                        geometry
+1 LINESTRING (182003.7 337678...</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> meuse_riv_sf,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"lightblue"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">1</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Write the code to take the following plot.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="assessing-spatial-trends-and-achieving-stationarity-for-geostatistical-modelling" class="level1">
+<h1>Assessing Spatial Trends and Achieving Stationarity for Geostatistical Modelling</h1>
+<section id="introduction-to-spatial-stationarity" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-to-spatial-stationarity">Introduction to Spatial Stationarity</h2>
+<p>Stationarity is a fundamental assumption in geostatistics because it allows observations from different locations to be combined to estimate spatial dependence. A spatial process is stationary when its statistical properties remain unchanged across space.</p>
+<p>A spatial process is <strong>strictly stationary</strong> if the joint probability distribution remains the same after shifting any set of locations. A less restrictive assumption is <strong>weak stationarity</strong> (second-order stationarity), which assumes that the mean and variance are constant and that the covariance between two observations depends only on their separation distance (h), rather than their actual locations.</p>
+<p>For variogram analysis, <strong>intrinsic stationarity</strong> is particularly important. It assumes that the variance of differences between observations depends only on the separation distance:</p>
+<p><span class="math display">\[Var(Z(x+h)-Z(x)) = 2\gamma(h)\]</span></p>
+<p>where <span class="math inline">\(\gamma(h)\)</span> is the variogram function.</p>
+<p>If a dataset contains a spatial trend, the variogram may continue increasing instead of reaching a stable sill. Therefore, identifying and modelling trends before variogram analysis is essential.</p>
+</section>
+<section id="visual-assessment-of-spatial-trends-in-zinc-concentration" class="level2">
+<h2 class="anchored" data-anchor-id="visual-assessment-of-spatial-trends-in-zinc-concentration">Visual Assessment of Spatial Trends in Zinc Concentration</h2>
+<p>The <code>meuse</code> dataset contains measurements of zinc concentration collected from a floodplain area. Since zinc concentration is highly skewed, the logarithm of zinc concentration is used for analysis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert coordinates into a data frame</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>meuse_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(meuse)</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Add log-transformed zinc</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>meuse_df <span class="ot">&lt;-</span> meuse_df <span class="sc">%&gt;%</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">log_zinc =</span> <span class="fu">log</span>(zinc),</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">sqrt_dist =</span> <span class="fu">sqrt</span>(dist))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(meuse_df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> log_zinc)) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"X coordinate"</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Log Zinc concentration"</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Spatial Trend of Log Zinc Concentration Along X Coordinate"</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(meuse_df, <span class="fu">aes</span>(<span class="at">x =</span> y, <span class="at">y =</span> log_zinc)) <span class="sc">+</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Y coordinate"</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Log Zinc concentration"</span>,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Spatial Trend of Log Zinc Concentration Along Y Coordinate"</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(meuse_df, <span class="fu">aes</span>(<span class="at">x =</span> dist, <span class="at">y =</span> log_zinc)) <span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Distance from river"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Log Zinc concentration"</span>,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Relationship Between Log Zinc Concentration and Distance"</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(meuse_df, <span class="fu">aes</span>(<span class="at">x =</span> sqrt_dist, <span class="at">y =</span> log_zinc)) <span class="sc">+</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Square root of distance from river"</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Log Zinc concentration"</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Linearised Relationship Between Zinc Concentration and Distance"</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The square-root transformation produces an approximately linear relationship, making it more appropriate for modelling the spatial trend.</p>
+</section>
+<section id="why-is-a-linear-relationship-important" class="level2">
+<h2 class="anchored" data-anchor-id="why-is-a-linear-relationship-important">Why is a Linear Relationship Important?</h2>
+<p>A linear trend model is important because geostatistical methods require separation of the deterministic trend component from the random spatial component.</p>
+<p>In this context, it is important to have a linear relationship because many spatial statistical methods, especially geostatistical models and variogram analysis, rely on the assumption that the systematic trend (or mean structure) can be modelled separately from the spatial correlation.</p>
+<p>We now have</p>
+<p><span class="math display">\[log(zinc) = \beta_0 + \beta_1\sqrt{distance} + \epsilon\]</span></p>
+<p>This is important because:</p>
+<ol type="1">
+<li>Better estimation of the trend</li>
+</ol>
+<ul>
+<li><p>A linear model provides a simple and interpretable estimate of the large-scale trend (mean variation) in zinc concentration.</p></li>
+<li><p>The spatial model can then focus on the remaining spatial dependence (the residuals).</p></li>
+</ul>
+<ol start="2" type="1">
+<li>Satisfies assumptions of spatial modelling</li>
+</ol>
+<ul>
+<li><p>Many geostatistical methods assume that after removing a trend, the residuals are approximately stationary.</p></li>
+<li><p>If a strong nonlinear trend remains, the variogram may continue increasing with distance instead of reaching a stable sill.</p></li>
+</ul>
+<ol start="3" type="1">
+<li>Improves variogram interpretation</li>
+</ol>
+<p>The variogram measures spatial dependence:</p>
+<p><span class="math display">\[
+\gamma(h)=\frac{1}{2}Var(Z(x+h)-Z(x))
+\]</span></p>
+<p>If there is an unmodelled trend, differences between distant observations become larger because of the trend rather than because of spatial correlation.</p>
+<p>This causes the variogram to rise continuously and prevents identifying important parameters such as the range and sill.</p>
+<p>Detailed explanation of the above:</p>
+<p>If there is an unmodelled trend, differences between distant observations become larger because of the trend rather than because of spatial correlation.</p>
+<p>The spatial process can be written as:</p>
+<p><span class="math inline">\(Z(s) = m(s) + \varepsilon(s)\)</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(Z(s)\)</span> is the observed value at location <span class="math inline">\(s\)</span>.</li>
+<li><span class="math inline">\(m(s)\)</span> is the spatial trend (mean structure).</li>
+<li><span class="math inline">\(\varepsilon(s)\)</span> is the spatially correlated random component.</li>
+</ul>
+<p>For two locations separated by a distance vector <span class="math inline">\(h\)</span>, the difference between observations is:</p>
+<p><span class="math inline">\(Z(s+h)-Z(s) = [m(s+h)-m(s)] + [\varepsilon(s+h)-\varepsilon(s)]\)</span></p>
+<p>The variogram is defined as:</p>
+<p><span class="math inline">\(\gamma(h)=\frac{1}{2}Var[Z(s+h)-Z(s)]\)</span></p>
+<p>When the trend <span class="math inline">\(m(s)\)</span> is not modelled, the term:</p>
+<p><span class="math inline">\(m(s+h)-m(s)\)</span></p>
+<p>increases as the distance <span class="math inline">\(h\)</span> increases. As a result, the variogram may continue to increase:</p>
+<p><span class="math inline">\(\gamma(h) \uparrow \quad \text{as } h \uparrow\)</span></p>
+<p>even when the spatial correlation has already reached a stable level.</p>
+<p>A common spatial trend model is:</p>
+<p><span class="math inline">\(m(s)=\beta_0+\beta_1x+\beta_2y\)</span></p>
+<p>where <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> are spatial coordinates. After removing the trend, the residuals are:</p>
+<p><span class="math inline">\(R(s)=Z(s)-m(s)\)</span></p>
+<p>The variogram should then be calculated using the residuals:</p>
+<p><span class="math inline">\(\gamma_R(h)=\frac{1}{2}Var[R(s+h)-R(s)]\)</span></p>
+<p>This ensures that the variogram measures true spatial dependence rather than the effect of an unmodelled spatial trend.</p>
+<ol start="4" type="1">
+<li>Allows accurate prediction</li>
+</ol>
+<ul>
+<li><p>Kriging methods assume that the mean structure is correctly specified.</p></li>
+<li><p>If the relationship between zinc concentration and distance is incorrectly modelled, predictions at unsampled locations will be biased.</p></li>
+</ul>
+<p>Therefore, transforming distance to make the relationship approximately linear is not just a statistical convenience; it helps separate the deterministic trend from the spatial random component, which is essential for reliable spatial prediction.</p>
+</section>
+</section>
+<section id="r-illustration-showing-three-spatial-situations" class="level1">
+<h1>R illustration showing three spatial situations:</h1>
+<p>No spatial correlation → variogram is approximately flat (constant semivariance).</p>
+<p>Positive spatial autocorrelation → nearby points are similar, so variogram starts low and increases with distance until reaching a sill.</p>
+<p>Unmodelled trend → variogram keeps increasing because differences are caused by the trend rather than spatial dependence.</p>
+<p>In-class demo</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="variogram-cloud-and-h-scatterplot" class="level2">
+<h2 class="anchored" data-anchor-id="variogram-cloud-and-h-scatterplot">Variogram Cloud and h-Scatterplot</h2>
+<p>Spatial exploratory analysis is important before fitting a variogram model. Two useful tools for exploring spatial dependence are the <strong>variogram cloud</strong> and the <strong>h-scatterplot</strong>.</p>
+<hr>
+</section>
+<section id="variogram-cloud" class="level2">
+<h2 class="anchored" data-anchor-id="variogram-cloud">Variogram Cloud</h2>
+<p>The variogram cloud displays the semivariance for every pair of observations. For two locations <span class="math inline">\(s_i\)</span> and <span class="math inline">\(s_j\)</span>, the pairwise semivariance is:</p>
+<p><span class="math display">\[
+\gamma_{ij}=\frac{1}{2}\left(Z(s_i)-Z(s_j)\right)^2
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(Z(s_i)\)</span> and <span class="math inline">\(Z(s_j)\)</span> are observations at two spatial locations.</li>
+<li>The distance between the locations is represented by <span class="math inline">\(h\)</span>.</li>
+</ul>
+<p>The variogram cloud plots:</p>
+<ul>
+<li><strong>x-axis:</strong> distance between locations (<span class="math inline">\(h\)</span>)</li>
+<li><strong>y-axis:</strong> pairwise semivariance (<span class="math inline">\(\gamma_{ij}\)</span>)</li>
+</ul>
+<section id="interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation">Interpretation</h3>
+<p>A variogram cloud is useful for:</p>
+<ol type="1">
+<li><strong>Detecting spatial autocorrelation</strong></li>
+</ol>
+<p>When nearby observations have similar values:</p>
+<p><span class="math display">\[
+Z(s_i) \approx Z(s_j)
+\]</span></p>
+<p>the semivariance is small:</p>
+<p><span class="math display">\[
+\gamma(h) \approx 0
+\]</span></p>
+<p>This indicates positive spatial autocorrelation.</p>
+<ol start="2" type="1">
+<li><strong>Identifying outliers</strong></li>
+</ol>
+<p>Pairs with very large semivariance values may indicate:</p>
+<ul>
+<li>measurement errors</li>
+<li>extreme observations</li>
+<li>unusual spatial patterns</li>
+</ul>
+<ol start="3" type="1">
+<li><strong>Detecting anisotropy</strong></li>
+</ol>
+<p>Variogram clouds can be examined in different directions to determine whether spatial dependence changes with direction.</p>
+<hr>
+</section>
+</section>
+</section>
+<section id="h-scatterplot" class="level1">
+<h1>h-Scatterplot</h1>
+<p>An h-scatterplot compares observations separated by a specified spatial lag <span class="math inline">\(h\)</span>.</p>
+<p>It plots:</p>
+<p><span class="math display">\[
+Z(s) \quad \text{against} \quad Z(s+h)
+\]</span></p>
+<p>where <span class="math inline">\(h\)</span> represents the distance between two locations.</p>
+<section id="interpretation-1" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-1">Interpretation</h3>
+<p>If observations are positively spatially correlated:</p>
+<p><span class="math display">\[
+Z(s+h) \approx Z(s)
+\]</span></p>
+<p>then points will lie close to the 45-degree line.</p>
+<p>A strong positive relationship indicates that nearby locations have similar values.</p>
+<p>As distance increases, the relationship usually weakens:</p>
+<p><span class="math display">\[
+Cor(Z(s),Z(s+h)) \rightarrow 0
+\]</span></p>
+<hr>
+</section>
+<section id="relationship-between-h-scatterplot-and-variogram" class="level2">
+<h2 class="anchored" data-anchor-id="relationship-between-h-scatterplot-and-variogram">Relationship between h-Scatterplot and Variogram</h2>
+<p>The variogram is related to the difference between paired observations:</p>
+<p><span class="math display">\[
+\gamma(h)=\frac{1}{2}Var(Z(s+h)-Z(s))
+\]</span></p>
+<p>When the h-scatterplot shows strong similarity:</p>
+<p><span class="math display">\[
+Z(s+h)\approx Z(s)
+\]</span></p>
+<p>the differences are small, resulting in a small variogram value.</p>
+<p>When observations become unrelated:</p>
+<p><span class="math display">\[
+Z(s+h) \not\approx Z(s)
+\]</span></p>
+<p>the differences increase, producing larger variogram values.</p>
+<hr>
+</section>
+<section id="comparison-of-variogram-cloud-and-h-scatterplot" class="level2">
+<h2 class="anchored" data-anchor-id="comparison-of-variogram-cloud-and-h-scatterplot">Comparison of Variogram Cloud and h-Scatterplot</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>Displays</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Variogram cloud</td>
+<td>Distance vs pairwise semivariance</td>
+<td>Explore spatial dependence, outliers, and anisotropy</td>
+</tr>
+<tr class="even">
+<td>h-Scatterplot</td>
+<td><span class="math inline">\(Z(s)\)</span> vs <span class="math inline">\(Z(s+h)\)</span></td>
+<td>Visualise spatial correlation at a specific lag</td>
+</tr>
+<tr class="odd">
+<td>Empirical variogram</td>
+<td>Average semivariance by distance class</td>
+<td>Estimate a spatial correlation model</td>
+</tr>
+</tbody>
+</table>
+<p>These exploratory tools help determine whether spatial autocorrelation exists and guide the selection of an appropriate variogram model.</p>
+</section>
+</section>
+<section id="lagged-scatter-plot" class="level1">
+<h1>Lagged Scatter plot</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A lagged scatterplot of the log of zinc concentrations in top soil along the river Meuse is shown below. The correlation between pairs of points less than 100 m apart is 0.722. Up to a separation distance of approximately 400 to 500 m, there is still significant spatial correlation between zinc concentrations.</p>
+</section>
+<section id="variogram-cloud-1" class="level1">
+<h1>Variogram Cloud</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>That is, the majority of plots are similar even at higher distances. However, dissimilarity increases with distances up to about 500 m.</p>
+<section id="variogram-map-for-assessing-directional-dependence-anisotropy-variogram-map" class="level2">
+<h2 class="anchored" data-anchor-id="variogram-map-for-assessing-directional-dependence-anisotropy-variogram-map">Variogram Map for Assessing Directional Dependence (Anisotropy Variogram Map )</h2>
+<p>Another method for evaluating <strong>directional dependence</strong> in spatial data is the <strong>variogram map</strong>. Unlike a directional variogram, where point pairs are classified separately by distance and direction, a variogram map considers both distance and direction simultaneously.</p>
+<p>For two observations:</p>
+<p><span class="math display">\[
+Z(s) \quad \text{and} \quad Z(s+h)
+\]</span></p>
+<p>the separation vector is:</p>
+<p><span class="math display">\[
+h=(x,y)
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(x\)</span> represents the horizontal spatial separation.</li>
+<li><span class="math inline">\(y\)</span> represents the vertical spatial separation.</li>
+</ul>
+<p>For each pair of observations, the semivariance contribution is calculated as:</p>
+<p><span class="math display">\[
+\gamma(h)=\frac{1}{2}(Z(s)-Z(s+h))^2
+\]</span></p>
+<p>This semivariance value is assigned to the grid cell corresponding to the separation vector <span class="math inline">\(h\)</span>.</p>
+<hr>
+</section>
+<section id="construction-of-a-variogram-map" class="level2">
+<h2 class="anchored" data-anchor-id="construction-of-a-variogram-map">Construction of a Variogram Map</h2>
+<p>The steps are:</p>
+<ol type="1">
+<li><p>Calculate all possible pairs of observations.</p></li>
+<li><p>For each pair, calculate the separation vector:</p></li>
+</ol>
+<p><span class="math display">\[
+h=(x_i-x_j,\ y_i-y_j)
+\]</span></p>
+<ol start="3" type="1">
+<li>Calculate the pairwise semivariance:</li>
+</ol>
+<p><span class="math display">\[
+\frac{1}{2}(Z(s_i)-Z(s_j))^2
+\]</span></p>
+<ol start="4" type="1">
+<li>Assign the semivariance value to the corresponding location in the variogram map.</li>
+</ol>
+<p>The map is centred at:</p>
+<p><span class="math display">\[
+(0,0)
+\]</span></p>
+<p>because <span class="math inline">\(h\)</span> represents a <strong>relative distance between locations</strong>, not an actual geographical location.</p>
+<hr>
+</section>
+<section id="symmetry-of-the-variogram-map" class="level2">
+<h2 class="anchored" data-anchor-id="symmetry-of-the-variogram-map">Symmetry of the Variogram Map</h2>
+<p>The variogram map is point symmetric around <span class="math inline">\((0,0)\)</span> because:</p>
+<p><span class="math display">\[
+\gamma(h)=\gamma(-h)
+\]</span></p>
+<p>This means that the separation vector:</p>
+<p><span class="math display">\[
+(x,y)
+\]</span></p>
+<p>has the same semivariance as:</p>
+<p><span class="math display">\[
+(-x,-y)
+\]</span></p>
+<p>Therefore, opposite directions have identical semivariance values.</p>
+<hr>
+</section>
+<section id="interpreting-a-variogram-map" class="level2">
+<h2 class="anchored" data-anchor-id="interpreting-a-variogram-map">Interpreting a Variogram Map</h2>
+<p>The colour intensity represents the magnitude of semivariance.</p>
+<ul>
+<li>Small semivariance:</li>
+</ul>
+<p><span class="math display">\[
+\gamma(h) \approx 0
+\]</span></p>
+<p>indicates that observations separated by distance <span class="math inline">\(h\)</span> are similar.</p>
+<ul>
+<li>Large semivariance:</li>
+</ul>
+<p><span class="math display">\[
+\gamma(h) \text{ is large}
+\]</span></p>
+<p>indicates weaker spatial similarity.</p>
+<p>A threshold can be applied so that only grid cells containing a minimum number of point pairs are displayed. This avoids displaying unreliable estimates based on very few observations.</p>
+<hr>
+</section>
+<section id="detecting-anisotropy" class="level2">
+<h2 class="anchored" data-anchor-id="detecting-anisotropy">Detecting Anisotropy</h2>
+<p>If spatial dependence is the same in all directions, the variogram map will appear approximately circular.</p>
+<p>However, if the map is elongated in one direction, it indicates anisotropy.</p>
+<p>For example:</p>
+<ul>
+<li>A longer range along the north-east to south-west direction indicates stronger spatial continuity in that direction.</li>
+<li>A shorter range in other directions indicates weaker spatial dependence.</li>
+</ul>
+<hr>
+</section>
+<section id="example-meuse-zinc-data" class="level2">
+<h2 class="anchored" data-anchor-id="example-meuse-zinc-data">Example: Meuse Zinc Data</h2>
+<p>For the log-transformed zinc concentrations in the topsoil of the Meuse river area:</p>
+<p><span class="math display">\[
+Y=\log(Zinc)
+\]</span></p>
+<p>the variogram map can reveal directional dependence.</p>
+<p>If the variogram map shows an elongated pattern along the north-east to south-west axis, it suggests that:</p>
+<p><span class="math display">\[
+Cor(Z(s),Z(s+h))
+\]</span></p>
+<p>remains stronger for locations separated along this direction.</p>
+<p>This indicates <strong>anisotropic spatial autocorrelation</strong>.</p>
+<hr>
+</section>
+<section id="r-code-variogram-map" class="level2">
+<h2 class="anchored" data-anchor-id="r-code-variogram-map">R Code: Variogram Map</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Meuse data</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(meuse)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to sf object</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>meuse_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  meuse,</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>),</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">crs =</span> <span class="dv">28992</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Variogram map</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>vg_map <span class="ot">&lt;-</span> <span class="fu">variogram</span>(</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(zinc) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  meuse_sf,</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">cutoff =</span> <span class="dv">1000</span>,</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">100</span>,</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">map =</span> <span class="cn">TRUE</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot variogram map</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  vg_map,</span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Variogram Map of log(Zinc)"</span></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Variogram map</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>vg_map <span class="ot">&lt;-</span> <span class="fu">variogram</span>(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(zinc) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  meuse_sf,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cutoff =</span> <span class="dv">1500</span>,</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">50</span>,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">map =</span> <span class="cn">TRUE</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot variogram map</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  vg_map,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Variogram Map of log(Zinc)"</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The shape of the variogram map helps identify whether the spatial correlation structure changes with direction, providing evidence of <strong>anisotropy</strong>.</p>
+</section>
+<section id="cutoff-and-width-parameters-in-a-variogram-map" class="level2">
+<h2 class="anchored" data-anchor-id="cutoff-and-width-parameters-in-a-variogram-map">Cutoff and Width Parameters in a Variogram Map</h2>
+<p>When creating a variogram map using <code>gstat::variogram()</code>, the parameters <code>cutoff</code> and <code>width</code> control the spatial lag distances used for calculating semivariance values.</p>
+<p>Example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>vg_map <span class="ot">&lt;-</span> <span class="fu">variogram</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(zinc) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  meuse_sf,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cutoff =</span> <span class="dv">1500</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">50</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">map =</span> <span class="cn">TRUE</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+<section id="cutoff" class="level2">
+<h2 class="anchored" data-anchor-id="cutoff">1. Cutoff</h2>
+<p>The <code>cutoff</code> parameter defines the <strong>maximum separation distance</strong> between pairs of observations included in the variogram calculation.</p>
+<p>For example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cutoff <span class="ot">=</span> <span class="dv">1500</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>means that only observation pairs separated by a distance less than or equal to 1500 units are considered.</p>
+<p>Mathematically:</p>
+<p><span class="math display">\[
+0 &lt; ||h|| \leq 1500
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(h\)</span> is the separation vector between two locations.</li>
+<li><span class="math inline">\(||h||\)</span> is the distance between locations.</li>
+</ul>
+<p>Pairs with distances greater than the cutoff value are ignored.</p>
+<section id="effect-of-changing-cutoff" class="level3">
+<h3 class="anchored" data-anchor-id="effect-of-changing-cutoff">Effect of changing cutoff</h3>
+<p>A smaller cutoff:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cutoff <span class="ot">=</span> <span class="dv">500</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>focuses on short-distance spatial dependence and is useful for studying local autocorrelation.</p>
+<p>A larger cutoff:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>cutoff <span class="ot">=</span> <span class="dv">3000</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>includes more distant pairs and helps identify the overall spatial dependence range.</p>
+<hr>
+</section>
+</section>
+<section id="width" class="level2">
+<h2 class="anchored" data-anchor-id="width">2. Width</h2>
+<p>The <code>width</code> parameter defines the size of the grid cells used to group separation vectors in the variogram map.</p>
+<p>For example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>width <span class="ot">=</span> <span class="dv">50</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>means that the separation distances are divided into intervals of 50 distance units.</p>
+<p>The lag distance classes are:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Distance range</th>
+<th>Lag cell</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0–50</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>50–100</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>100–150</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="odd">
+<td>1450–1500</td>
+<td>30</td>
+</tr>
+</tbody>
+</table>
+<p>Each cell contains all pairs of observations whose separation vector <span class="math inline">\(h=(x,y)\)</span> falls within that region.</p>
+<hr>
+</section>
+<section id="relationship-between-cutoff-and-width" class="level2">
+<h2 class="anchored" data-anchor-id="relationship-between-cutoff-and-width">Relationship Between Cutoff and Width</h2>
+<p>The approximate number of distance classes is:</p>
+<p><span class="math display">\[
+\text{Number of lag classes}
+=
+\frac{\text{cutoff}}{\text{width}}
+\]</span></p>
+<p>For the example:</p>
+<p><span class="math display">\[
+\frac{1500}{50}=30
+\]</span></p>
+<p>Therefore, the variogram map contains approximately 30 distance classes in each direction around the origin.</p>
+<hr>
+</section>
+<section id="interpretation-of-the-variogram-map" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-of-the-variogram-map">Interpretation of the Variogram Map</h2>
+<p>A variogram map is centred at:</p>
+<p><span class="math display">\[
+(0,0)
+\]</span></p>
+<p>because it represents the separation vector:</p>
+<p><span class="math display">\[
+h=(x_i-x_j,\ y_i-y_j)
+\]</span></p>
+<p>rather than the geographical coordinates of the sampling locations.</p>
+<p>For every pair of observations, the semivariance contribution is calculated as:</p>
+<p><span class="math display">\[
+\gamma(h)=\frac{1}{2}(Z(s)-Z(s+h))^2
+\]</span></p>
+<p>and assigned to the grid cell corresponding to the separation vector <span class="math inline">\(h\)</span>.</p>
+<p>The colour intensity in each cell represents the magnitude of the average semivariance.</p>
+<ul>
+<li>Small values of <span class="math inline">\(\gamma(h)\)</span> indicate similar observations and stronger spatial autocorrelation.</li>
+<li>Large values of <span class="math inline">\(\gamma(h)\)</span> indicate dissimilar observations and weaker spatial dependence.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="choosing-cutoff-and-width-values" class="level1">
+<h1>Choosing Cutoff and Width Values</h1>
+<p>The choice of <code>cutoff</code> and <code>width</code> depends on the spatial scale of the study area.</p>
+<p>Common choices are:</p>
+<section id="fine-resolution" class="level3">
+<h3 class="anchored" data-anchor-id="fine-resolution">Fine resolution</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>cutoff <span class="ot">=</span> <span class="dv">1500</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>width <span class="ot">=</span> <span class="dv">25</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Provides more spatial detail but fewer pairs in each cell.</p>
+</section>
+<section id="moderate-resolution" class="level3">
+<h3 class="anchored" data-anchor-id="moderate-resolution">Moderate resolution</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>cutoff <span class="ot">=</span> <span class="dv">1500</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>width <span class="ot">=</span> <span class="dv">50</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Provides a balance between detail and reliability.</p>
+</section>
+<section id="coarse-resolution" class="level3">
+<h3 class="anchored" data-anchor-id="coarse-resolution">Coarse resolution</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>cutoff <span class="ot">=</span> <span class="dv">1500</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>width <span class="ot">=</span> <span class="dv">100</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Provides smoother maps but less spatial detail.</p>
+<p>A smaller <code>width</code> increases spatial resolution, whereas a larger <code>width</code> increases the number of point pairs per cell and produces a smoother variogram map.</p>
+</section>
+</section>
+<section id="values-plotted-in-a-variogram-map-cell" class="level1">
+<h1>Values Plotted in a Variogram Map Cell</h1>
+<p>In a variogram map, each grid cell contains multiple pairs of observations. Each pair contributes a different semivariance value. Since a single cell cannot display all these values separately, the values are summarized.</p>
+<p>For each pair of locations:</p>
+<p><span class="math display">\[
+Z(s_i) \quad \text{and} \quad Z(s_i+h)
+\]</span></p>
+<p>the pairwise semivariance contribution is calculated as:</p>
+<p><span class="math display">\[
+\gamma_i(h)=\frac{1}{2}(Z(s_i)-Z(s_i+h))^2
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(Z(s_i)\)</span> is the value at location <span class="math inline">\(s_i\)</span>.</li>
+<li><span class="math inline">\(Z(s_i+h)\)</span> is the value at a location separated by lag vector <span class="math inline">\(h\)</span>.</li>
+</ul>
+<hr>
+<section id="aggregating-values-within-a-grid-cell" class="level2">
+<h2 class="anchored" data-anchor-id="aggregating-values-within-a-grid-cell">Aggregating Values Within a Grid Cell</h2>
+<p>Suppose a grid cell contains <span class="math inline">\(N_h\)</span> pairs of observations. The variogram map assigns the <strong>average semivariance</strong> of these pairs to that cell:</p>
+<p><span class="math display">\[
+\gamma(h)=
+\frac{1}{N_h}
+\sum_{i=1}^{N_h}
+\frac{1}{2}(Z(s_i)-Z(s_i+h))^2
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(N_h\)</span> is the number of point pairs falling within the grid cell.</li>
+<li><span class="math inline">\(\gamma(h)\)</span> is the value plotted in the heat map.</li>
+</ul>
+<p>Therefore, the colour of each cell represents the <strong>mean semivariance</strong>, not individual pairwise semivariances.</p>
+<hr>
+</section>
+<section id="example" class="level2">
+<h2 class="anchored" data-anchor-id="example">Example</h2>
+<p>Assume a grid cell contains five pairs of observations. The calculated semivariances are:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Pair</th>
+<th style="text-align: right;">Semivariance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: right;">2.1</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: right;">3.0</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: right;">2.5</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td style="text-align: right;">4.0</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td style="text-align: right;">3.4</td>
+</tr>
+</tbody>
+</table>
+<p>The value displayed in the heat map cell is:</p>
+<p><span class="math display">\[
+\gamma(h)=
+\frac{2.1+3.0+2.5+4.0+3.4}{5}
+\]</span></p>
+<p><span class="math display">\[
+\gamma(h)=3.0
+\]</span></p>
+<p>Thus, the heat map colour corresponds to a semivariance value of <span class="math inline">\(3.0\)</span>.</p>
+<hr>
+</section>
+<section id="minimum-number-of-pairs" class="level2">
+<h2 class="anchored" data-anchor-id="minimum-number-of-pairs">Minimum Number of Pairs</h2>
+<p>Cells with very few observation pairs provide unreliable estimates. Therefore, a minimum pair threshold is often applied.</p>
+<p>For example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(vg_map, <span class="at">threshold =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>means that only cells containing at least 4 observation pairs are displayed.</p>
+<hr>
+</section>
+<section id="interpretation-2" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-2">Interpretation</h2>
+<p>The variogram map shows the spatial pattern of average semivariance:</p>
+<ul>
+<li>Low values of <span class="math inline">\(\gamma(h)\)</span> indicate that locations separated by vector <span class="math inline">\(h\)</span> have similar values.</li>
+</ul>
+<p><span class="math display">\[
+Z(s_i) \approx Z(s_i+h)
+\]</span></p>
+<ul>
+<li>High values of <span class="math inline">\(\gamma(h)\)</span> indicate that locations separated by vector <span class="math inline">\(h\)</span> have different values.</li>
+</ul>
+<p><span class="math display">\[
+|Z(s_i)-Z(s_i+h)| \text{ is large}
+\]</span></p>
+<p>Therefore, the heat map represents the <strong>average spatial dissimilarity for each distance and direction</strong>, which allows detection of directional dependence and anisotropy.</p>
+</section>
+</section>
+<section id="basic-variogram-models" class="level1">
+<h1>Basic Variogram Models</h1>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show list of basic variogram models available in gstat</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kbl</span>(<span class="fu">vgm</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_minimal</span>(<span class="at">full_width =</span> F, <span class="at">position =</span> <span class="st">"left"</span>, <span class="at">html_font =</span> <span class="st">"Cambria"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="lightable-minimal caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">short</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">long</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Nug</td>
+<td style="text-align: left;">Nug (nugget)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Exp</td>
+<td style="text-align: left;">Exp (exponential)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sph</td>
+<td style="text-align: left;">Sph (spherical)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Gau</td>
+<td style="text-align: left;">Gau (gaussian)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Exc</td>
+<td style="text-align: left;">Exclass (Exponential class/stable)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mat</td>
+<td style="text-align: left;">Mat (Matern)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ste</td>
+<td style="text-align: left;">Mat (Matern, M. Stein's parameterization)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cir</td>
+<td style="text-align: left;">Cir (circular)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lin</td>
+<td style="text-align: left;">Lin (linear)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bes</td>
+<td style="text-align: left;">Bes (bessel)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pen</td>
+<td style="text-align: left;">Pen (pentaspherical)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Per</td>
+<td style="text-align: left;">Per (periodic)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wav</td>
+<td style="text-align: left;">Wav (wave)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hol</td>
+<td style="text-align: left;">Hol (hole)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Log</td>
+<td style="text-align: left;">Log (logarithmic)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pow</td>
+<td style="text-align: left;">Pow (power)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Spl</td>
+<td style="text-align: left;">Spl (spline)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Leg</td>
+<td style="text-align: left;">Leg (Legendre)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Err</td>
+<td style="text-align: left;">Err (Measurement error)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Int</td>
+<td style="text-align: left;">Int (Intercept)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show.vgms</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="omnidirectional-variogram" class="level2">
+<h2 class="anchored" data-anchor-id="omnidirectional-variogram">Omnidirectional Variogram</h2>
+<p>An <strong>omnidirectional variogram</strong> is a variogram calculated by considering all directions together. It assumes that spatial dependence depends only on the separation distance <span class="math inline">\(h\)</span> and not on the direction.</p>
+<p>In an omnidirectional variogram:</p>
+<p><span class="math display">\[
+\gamma(h)
+\]</span></p>
+<p>is a function of distance only.</p>
+<p>The direction of the separation vector is ignored, and all pairs of observations with approximately the same distance are grouped together.</p>
+<hr>
+</section>
+<section id="calculation-of-omnidirectional-variogram" class="level2">
+<h2 class="anchored" data-anchor-id="calculation-of-omnidirectional-variogram">Calculation of Omnidirectional Variogram</h2>
+<p>For two observations:</p>
+<p><span class="math display">\[
+Z(s_i) \quad \text{and} \quad Z(s_j)
+\]</span></p>
+<p>the separation distance is:</p>
+<p><span class="math display">\[
+h=||s_i-s_j||
+\]</span></p>
+<p>The pairwise semivariance is:</p>
+<p><span class="math display">\[
+\gamma_{ij}
+=
+\frac{1}{2}(Z(s_i)-Z(s_j))^2
+\]</span></p>
+<p>All pairs with similar distances are grouped into distance classes (bins). The empirical variogram is calculated as:</p>
+<p><span class="math display">\[
+\hat{\gamma}(h)
+=
+\frac{1}{2N(h)}
+\sum_{i=1}^{N(h)}
+(Z(s_i)-Z(s_i+h))^2
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(N(h)\)</span> is the number of point pairs separated by distance <span class="math inline">\(h\)</span>.</li>
+<li><span class="math inline">\(\hat{\gamma}(h)\)</span> is the average semivariance at distance <span class="math inline">\(h\)</span>.</li>
+</ul>
+<hr>
+</section>
+<section id="interpretation-3" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-3">Interpretation</h2>
+<p>The omnidirectional variogram describes how similarity between observations changes with distance.</p>
+<section id="positive-spatial-autocorrelation" class="level3">
+<h3 class="anchored" data-anchor-id="positive-spatial-autocorrelation">Positive spatial autocorrelation</h3>
+<p>At small distances:</p>
+<p><span class="math display">\[
+\gamma(h) \approx 0
+\]</span></p>
+<p>because nearby observations have similar values.</p>
+<p>As distance increases:</p>
+<p><span class="math display">\[
+\gamma(h) \uparrow
+\]</span></p>
+<p>because observations become less similar.</p>
+<hr>
+</section>
+<section id="spatial-independence" class="level3">
+<h3 class="anchored" data-anchor-id="spatial-independence">Spatial independence</h3>
+<p>If there is no spatial correlation:</p>
+<p><span class="math display">\[
+\gamma(h)
+\]</span></p>
+<p>remains approximately constant for all distances.</p>
+<p>The variogram reaches a <strong>sill</strong> quickly.</p>
+<hr>
+</section>
+<section id="trend-effect" class="level3">
+<h3 class="anchored" data-anchor-id="trend-effect">Trend effect</h3>
+<p>If an unmodelled spatial trend exists:</p>
+<p><span class="math display">\[
+Z(s)=m(s)+\epsilon(s)
+\]</span></p>
+<p>the variogram may continue increasing with distance because differences are caused by changes in the mean function:</p>
+<p><span class="math display">\[
+m(s)
+\]</span></p>
+<p>rather than spatial dependence.</p>
+<hr>
+</section>
+</section>
+<section id="r-example-omnidirectional-variogram" class="level2">
+<h2 class="anchored" data-anchor-id="r-example-omnidirectional-variogram">R Example: Omnidirectional Variogram</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Meuse data</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(meuse)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to sf object</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>meuse_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  meuse,</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>),</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">crs =</span> <span class="dv">28992</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate omnidirectional variogram</span></span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>vg <span class="ot">&lt;-</span> <span class="fu">variogram</span>(</span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(zinc) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>  meuse_sf,</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">cutoff =</span> <span class="dv">1500</span>,</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">100</span></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot empirical variogram</span></span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>  vg,</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Omnidirectional Variogram of log(Zinc)"</span>,</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Distance h"</span>,</span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="fu">expression</span>(<span class="fu">gamma</span>(h))</span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The <code>width</code> parameter defines the lag distance interval (bin size) used to group pairs of observations based on their separation distance.</p>
+</section>
+<section id="width-parameter-in-an-omnidirectional-variogram" class="level2">
+<h2 class="anchored" data-anchor-id="width-parameter-in-an-omnidirectional-variogram">Width Parameter in an Omnidirectional Variogram</h2>
+<p>In <code>gstat::variogram()</code>, the <code>width</code> parameter controls the <strong>distance interval (lag bin size)</strong> used to group pairs of observations according to their separation distance.</p>
+<p>Example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>vg <span class="ot">&lt;-</span> <span class="fu">variogram</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(zinc) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  meuse_sf,</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cutoff =</span> <span class="dv">1500</span>,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">100</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+<section id="meaning-of-width" class="level2">
+<h2 class="anchored" data-anchor-id="meaning-of-width">Meaning of Width</h2>
+<p>The empirical variogram is not calculated for every individual distance. Instead, observation pairs are grouped into distance classes called <strong>lag bins</strong>.</p>
+<p>When:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>width <span class="ot">=</span> <span class="dv">100</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>the separation distances are divided into intervals of 100 distance units.</p>
+<p>The lag classes are approximately:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Lag class</th>
+<th>Distance range</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0–100</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>100–200</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>200–300</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>300–400</td>
+</tr>
+<tr class="odd">
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>1400–1500</td>
+</tr>
+</tbody>
+</table>
+<p>For each distance class, all point pairs within that interval are used to estimate the average semivariance.</p>
+<hr>
+</section>
+<section id="semivariance-calculation" class="level2">
+<h2 class="anchored" data-anchor-id="semivariance-calculation">Semivariance Calculation</h2>
+<p>For two observations:</p>
+<p><span class="math display">\[
+Z(s_i) \quad \text{and} \quad Z(s_i+h)
+\]</span></p>
+<p>the pairwise semivariance is:</p>
+<p><span class="math display">\[
+\gamma_i(h)
+=
+\frac{1}{2}
+(Z(s_i)-Z(s_i+h))^2
+\]</span></p>
+<p>For a distance class containing <span class="math inline">\(N(h)\)</span> pairs, the empirical variogram value is:</p>
+<p><span class="math display">\[
+\hat{\gamma}(h)
+=
+\frac{1}{2N(h)}
+\sum_{i=1}^{N(h)}
+(Z(s_i)-Z(s_i+h))^2
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(N(h)\)</span> is the number of pairs within the lag distance interval.</li>
+<li><span class="math inline">\(\hat{\gamma}(h)\)</span> is the average semivariance plotted on the variogram.</li>
+</ul>
+<hr>
+</section>
+<section id="relationship-between-cutoff-and-width-1" class="level2">
+<h2 class="anchored" data-anchor-id="relationship-between-cutoff-and-width-1">Relationship Between Cutoff and Width</h2>
+<p>The approximate number of lag classes is:</p>
+<p><span class="math display">\[
+\text{Number of lag classes}
+=
+\frac{\text{cutoff}}{\text{width}}
+\]</span></p>
+<p>For the example:</p>
+<p><span class="math display">\[
+\frac{1500}{100}=15
+\]</span></p>
+<p>Therefore, the variogram contains approximately 15 distance classes.</p>
+<hr>
+</section>
+<section id="effect-of-changing-width" class="level2">
+<h2 class="anchored" data-anchor-id="effect-of-changing-width">Effect of Changing Width</h2>
+<section id="smaller-width" class="level3">
+<h3 class="anchored" data-anchor-id="smaller-width">Smaller Width</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>width <span class="ot">=</span> <span class="dv">50</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Distance classes become:</p>
+<p><span class="math display">\[
+0-50,\ 50-100,\ 100-150,\ldots
+\]</span></p>
+<p>Advantages:</p>
+<ul>
+<li>Provides a more detailed variogram.</li>
+<li>Can detect short-range spatial patterns.</li>
+</ul>
+<p>Disadvantages:</p>
+<ul>
+<li>Fewer point pairs per class.</li>
+<li>Variogram estimates may become noisy.</li>
+</ul>
+<hr>
+</section>
+<section id="larger-width" class="level3">
+<h3 class="anchored" data-anchor-id="larger-width">Larger Width</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>width <span class="ot">=</span> <span class="dv">200</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Distance classes become:</p>
+<p><span class="math display">\[
+0-200,\ 200-400,\ 400-600,\ldots
+\]</span></p>
+<p>Advantages:</p>
+<ul>
+<li>More point pairs in each class.</li>
+<li>Produces a smoother variogram.</li>
+</ul>
+<p>Disadvantages:</p>
+<ul>
+<li>Reduces spatial resolution.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="interpretation-4" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-4">Interpretation</h2>
+<p>The <code>width</code> parameter controls the resolution of the distance axis in the variogram.</p>
+<p>A small width gives a detailed but potentially noisy variogram, while a large width gives a smoother but less detailed variogram.</p>
+<p>For the Meuse zinc example:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>cutoff <span class="ot">=</span> <span class="dv">1500</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>width <span class="ot">=</span> <span class="dv">100</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>means:</p>
+<ol type="1">
+<li>Consider all observation pairs separated by less than 1500 m.</li>
+<li>Divide distances into 100 m intervals.</li>
+<li>Calculate the average semivariance within each interval.</li>
+<li>Plot these averages to obtain the empirical omnidirectional variogram.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate omnidirectional variogram</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>vg <span class="ot">&lt;-</span> <span class="fu">variogram</span>(</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(zinc) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  meuse_sf,</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cutoff =</span> <span class="dv">1500</span>,</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">200</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot empirical variogram</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>  vg,</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Omnidirectional Variogram of log(Zinc)"</span>,</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Distance h"</span>,</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="fu">expression</span>(<span class="fu">gamma</span>(h))</span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We will use width=100.</p>
+<hr>
+</section>
+<section id="omnidirectional-vs-directional-variogram" class="level2">
+<h2 class="anchored" data-anchor-id="omnidirectional-vs-directional-variogram">Omnidirectional vs Directional Variogram</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variogram type</th>
+<th>Direction considered?</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Omnidirectional variogram</td>
+<td>No</td>
+<td>Overall spatial dependence</td>
+</tr>
+<tr class="even">
+<td>Directional variogram</td>
+<td>Yes</td>
+<td>Detect anisotropy</td>
+</tr>
+<tr class="odd">
+<td>Variogram map</td>
+<td>Distance and direction jointly</td>
+<td>Visualise directional dependence</td>
+</tr>
+</tbody>
+</table>
+<p>An omnidirectional variogram is usually the first step in spatial analysis. If anisotropy is suspected, directional variograms or variogram maps are used for further investigation.</p>
+</section>
+<section id="fitting-an-omnidirectional-variogram" class="level2">
+<h2 class="anchored" data-anchor-id="fitting-an-omnidirectional-variogram">Fitting an Omnidirectional Variogram</h2>
+<p>An omnidirectional variogram assumes that spatial dependence depends only on the separation distance <span class="math inline">\(h\)</span> and not on the direction.</p>
+<p>The empirical variogram is estimated as:</p>
+<p><span class="math display">\[
+\hat{\gamma}(h)
+=
+\frac{1}{2N(h)}
+\sum_{i=1}^{N(h)}
+(Z(s_i)-Z(s_i+h))^2
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(N(h)\)</span> is the number of observation pairs separated by distance <span class="math inline">\(h\)</span>.</li>
+<li><span class="math inline">\(\hat{\gamma}(h)\)</span> is the estimated semivariance.</li>
+</ul>
+<p>A theoretical variogram model is then fitted to the empirical variogram.</p>
+<hr>
+</section>
+<section id="load-data-and-convert-to-sf-object" class="level2">
+<h2 class="anchored" data-anchor-id="load-data-and-convert-to-sf-object">Load Data and Convert to sf Object</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gstat)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Meuse data</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(meuse)</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to sf object</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>meuse_sf <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  meuse,</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"x"</span>, <span class="st">"y"</span>),</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">crs =</span> <span class="dv">28992</span></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<hr>
+</section>
+<section id="calculate-omnidirectional-empirical-variogram" class="level2">
+<h2 class="anchored" data-anchor-id="calculate-omnidirectional-empirical-variogram">Calculate Omnidirectional Empirical Variogram</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>vg_emp <span class="ot">&lt;-</span> <span class="fu">variogram</span>(</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(zinc) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  meuse_sf,</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cutoff =</span> <span class="dv">1500</span>,</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">100</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot empirical variogram</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  vg_emp,</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Empirical Omnidirectional Variogram"</span>,</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Distance h"</span>,</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="fu">expression</span>(<span class="fu">gamma</span>(h))</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="define-initial-variogram-model" class="level2">
+<h2 class="anchored" data-anchor-id="define-initial-variogram-model">Define Initial Variogram Model</h2>
+<p>A variogram model consists of:</p>
+<ul>
+<li><strong>Nugget</strong> (<span class="math inline">\(C_0\)</span>): variation at very small distances.</li>
+<li><strong>Partial sill</strong> (<span class="math inline">\(C_1\)</span>): spatially correlated variation.</li>
+<li><strong>Range</strong> (<span class="math inline">\(a\)</span>): distance where spatial correlation disappears.</li>
+</ul>
+<p>The general form is:</p>
+<p><span class="math display">\[
+\gamma(h)=C_0+C_1 f(h)
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(C_0\)</span> = nugget variance.</li>
+<li><span class="math inline">\(C_0+C_1\)</span> = sill.</li>
+<li><span class="math inline">\(a\)</span> = range.</li>
+</ul>
+<p>For example, a spherical model:</p>
+<p><span class="math display">\[
+\gamma(h)=
+C_0+C_1
+\left[
+1.5\frac{h}{a}
+-
+0.5\left(\frac{h}{a}\right)^3
+\right]
+\]</span></p>
+<p>for:</p>
+<p><span class="math display">\[
+0&lt;h&lt;a
+\]</span></p>
+<p>and:</p>
+<p><span class="math display">\[
+\gamma(h)=C_0+C_1
+\]</span></p>
+<p>for:</p>
+<p><span class="math display">\[
+h\geq a
+\]</span></p>
+<hr>
+</section>
+<section id="fit-spherical-variogram-model" class="level2">
+<h2 class="anchored" data-anchor-id="fit-spherical-variogram-model">Fit Spherical Variogram Model</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial model</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>vg_model <span class="ot">&lt;-</span> <span class="fu">vgm</span>(</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">psill =</span> <span class="fl">0.6</span>,</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">"Sph"</span>,</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">range =</span> <span class="dv">800</span>,</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">nugget =</span> <span class="fl">0.1</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit model</span></span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a>vg_fit <span class="ot">&lt;-</span> <span class="fu">fit.variogram</span>(</span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a>  vg_emp,</span>
+<span id="cb45-12"><a href="#cb45-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> vg_model</span>
+<span id="cb45-13"><a href="#cb45-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb45-14"><a href="#cb45-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-15"><a href="#cb45-15" aria-hidden="true" tabindex="-1"></a>vg_fit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  model      psill    range
+1   Nug 0.06159529   0.0000
+2   Sph 0.58981594 942.5242</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="plot-fitted-variogram" class="level2">
+<h2 class="anchored" data-anchor-id="plot-fitted-variogram">Plot Fitted Variogram</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  vg_emp,</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  vg_fit,</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">main =</span> <span class="st">"Fitted Omnidirectional Variogram"</span>,</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">xlab =</span> <span class="st">"Distance h"</span>,</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">ylab =</span> <span class="fu">expression</span>(<span class="fu">gamma</span>(h))</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="interpretation-of-the-fitted-model" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-of-the-fitted-model">Interpretation of the Fitted Model</h2>
+<p>The fitted variogram provides estimates of:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Nugget (<span class="math inline">\(C_0\)</span>)</td>
+<td>Measurement error or microscale variation</td>
+</tr>
+<tr class="even">
+<td>Partial sill (<span class="math inline">\(C_1\)</span>)</td>
+<td>Spatially correlated variation</td>
+</tr>
+<tr class="odd">
+<td>Sill (<span class="math inline">\(C_0+C_1\)</span>)</td>
+<td>Total variance after reaching stability</td>
+</tr>
+<tr class="even">
+<td>Range (<span class="math inline">\(a\)</span>)</td>
+<td>Maximum distance of spatial dependence</td>
+</tr>
+</tbody>
+</table>
+<p>If the variogram reaches a sill at distance <span class="math inline">\(a\)</span>, observations separated by distances greater than <span class="math inline">\(a\)</span> are approximately spatially independent.</p>
+</section>
+<section id="interpretation-of-the-fitted-omnidirectional-variogram-model" class="level2">
+<h2 class="anchored" data-anchor-id="interpretation-of-the-fitted-omnidirectional-variogram-model">Interpretation of the Fitted Omnidirectional Variogram Model</h2>
+<p>The fitted variogram model is:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Model</th>
+<th style="text-align: right;">Partial sill (<span class="math inline">\(psill\)</span>)</th>
+<th style="text-align: right;">Range</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Nug</td>
+<td style="text-align: right;">0.0616</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td>Sph</td>
+<td style="text-align: right;">0.5898</td>
+<td style="text-align: right;">942.5</td>
+</tr>
+</tbody>
+</table>
+<p>The fitted model is a <strong>nugget + spherical variogram model</strong>:</p>
+<p><span class="math display">\[
+\gamma(h)=C_0+C_1Sph(h)
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(C_0\)</span> is the nugget variance.</li>
+<li><span class="math inline">\(C_1\)</span> is the partial sill representing spatially correlated variation.</li>
+<li><span class="math inline">\(a\)</span> is the range parameter.</li>
+</ul>
+<hr>
+</section>
+<section id="nugget-effect" class="level2">
+<h2 class="anchored" data-anchor-id="nugget-effect">Nugget Effect</h2>
+<p>The nugget component is:</p>
+<p><span class="math display">\[
+C_0=0.0616
+\]</span></p>
+<p>The nugget represents variation that occurs at very small spatial distances. It includes:</p>
+<ul>
+<li>measurement errors,</li>
+<li>microscale variation,</li>
+<li>spatial variation occurring at distances smaller than the sampling interval.</li>
+</ul>
+<p>The relatively small nugget value indicates that unexplained local variation is low compared with the total spatial variation.</p>
+<hr>
+</section>
+<section id="spherical-component" class="level2">
+<h2 class="anchored" data-anchor-id="spherical-component">Spherical Component</h2>
+<p>The spherical component has:</p>
+<p><span class="math display">\[
+C_1=0.5898
+\]</span></p>
+<p>and range:</p>
+<p><span class="math display">\[
+a=942.5
+\]</span></p>
+<p>The partial sill represents the amount of variation explained by spatial autocorrelation.</p>
+<p>The range indicates the maximum distance over which observations are spatially correlated.</p>
+<p>Therefore:</p>
+<p><span class="math display">\[
+h &lt; 942.5
+\]</span></p>
+<p>indicates spatial dependence, while:</p>
+<p><span class="math display">\[
+h &gt; 942.5
+\]</span></p>
+<p>indicates that observations are approximately spatially independent.</p>
+<hr>
+</section>
+<section id="total-sill" class="level2">
+<h2 class="anchored" data-anchor-id="total-sill">Total Sill</h2>
+<p>The total sill is the sum of the nugget and partial sill:</p>
+<p><span class="math display">\[
+\text{Sill}=C_0+C_1
+\]</span></p>
+<p>Substituting the fitted values:</p>
+<p><span class="math display">\[
+\text{Sill}=0.0616+0.5898
+\]</span></p>
+<p><span class="math display">\[
+\text{Sill}=0.6514
+\]</span></p>
+<p>Therefore, the variogram stabilizes at approximately:</p>
+<p><span class="math display">\[
+\gamma(h)=0.6514
+\]</span></p>
+<hr>
+</section>
+<section id="strength-of-spatial-dependence" class="level2">
+<h2 class="anchored" data-anchor-id="strength-of-spatial-dependence">Strength of Spatial Dependence</h2>
+<p>The proportion of variance explained by spatial dependence can be calculated as:</p>
+<p><span class="math display">\[
+\text{Spatial dependence ratio}
+=
+\frac{C_1}{C_0+C_1}
+\]</span></p>
+<p>Using the fitted values:</p>
+<p><span class="math display">\[
+=
+\frac{0.5898}{0.0616+0.5898}
+\]</span></p>
+<p><span class="math display">\[
+=0.906
+\]</span></p>
+<p>or approximately:</p>
+<p><span class="math display">\[
+90.6\%
+\]</span></p>
+<p>This indicates strong spatial dependence.</p>
+<hr>
+</section>
+<section id="overall-interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="overall-interpretation">Overall Interpretation</h2>
+<p>The fitted nugget-spherical model indicates that:</p>
+<ul>
+<li>The nugget variance is small (<span class="math inline">\(0.0616\)</span>), suggesting limited measurement error and microscale variation.</li>
+<li>Most of the variability is explained by spatial structure (<span class="math inline">\(0.5898\)</span>).</li>
+<li>Log zinc concentrations are spatially correlated up to approximately <strong>942.5 m</strong>.</li>
+<li>Locations closer than 942.5 m tend to have similar zinc concentrations.</li>
+<li>Locations separated by larger distances are approximately independent.</li>
+</ul>
+<p>A summary statement is:</p>
+<blockquote class="blockquote">
+<p>The omnidirectional variogram was fitted using a nugget-spherical model. The fitted model had a nugget variance of 0.0616, a partial sill of 0.5898, and a spatial range of 942.5 m. Approximately 90.6% of the total variance was explained by spatial dependence, indicating strong spatial autocorrelation in log zinc concentrations.</p>
+</blockquote>
+</section>
+<section id="why-omnidirectional-variogram-can-be-misleading" class="level2">
+<h2 class="anchored" data-anchor-id="why-omnidirectional-variogram-can-be-misleading">Why Omnidirectional Variogram Can Be Misleading</h2>
+<p>When all directions are combined:</p>
+<ul>
+<li>Strong spatial dependence in one direction is averaged with weaker dependence in another direction.</li>
+<li>The estimated range may represent an average range rather than the true directional ranges.</li>
+<li>Directional patterns and anisotropy may be hidden.</li>
+</ul>
+<p>For example:</p>
+<p>Suppose the true ranges are:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Direction</th>
+<th style="text-align: right;">Range</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>North-east to South-west</td>
+<td style="text-align: right;">1500 m</td>
+</tr>
+<tr class="even">
+<td>East-west</td>
+<td style="text-align: right;">500 m</td>
+</tr>
+</tbody>
+</table>
+<p>An omnidirectional variogram may show an intermediate range, which does not represent either direction accurately.</p>
+<hr>
+</section>
+<section id="detecting-anisotropy-1" class="level2">
+<h2 class="anchored" data-anchor-id="detecting-anisotropy-1">Detecting Anisotropy</h2>
+<p>When anisotropy is suspected, use:</p>
+<ol type="1">
+<li><strong>Directional variograms</strong></li>
+</ol>
+<p>The variogram is calculated separately for different directions:</p>
+<p><span class="math display">\[
+\gamma(h,\theta)
+\]</span></p>
+<p>Example directions:</p>
+<ul>
+<li><span class="math inline">\(0^\circ\)</span></li>
+<li><span class="math inline">\(45^\circ\)</span></li>
+<li><span class="math inline">\(90^\circ\)</span></li>
+<li><span class="math inline">\(135^\circ\)</span></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>vg_directional <span class="ot">&lt;-</span> <span class="fu">variogram</span>(</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log</span>(zinc) <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  meuse_sf,</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">alpha =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">45</span>,<span class="dv">90</span>,<span class="dv">135</span>),</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cutoff =</span> <span class="dv">2000</span>,</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">100</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(vg_directional)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<hr>
+<ol start="2" type="1">
+<li><strong>Variogram map</strong></li>
+</ol>
+<p>A variogram map considers distance and direction jointly.</p>
+<p>The separation vector is:</p>
+<p><span class="math display">\[
+h=(x,y)
+\]</span></p>
+<p>and the semivariance contribution:</p>
+<p><span class="math display">\[
+\frac{1}{2}(Z(s)-Z(s+h))^2
+\]</span></p>
+<p>is assigned to the corresponding lag cell.</p>
+<p>An elongated pattern in the variogram map indicates directional dependence.</p>
+<hr>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>An omnidirectional variogram is useful when the process is approximately isotropic:</p>
+<p><span class="math display">\[
+\gamma(h)
+\]</span></p>
+<p>depends only on distance.</p>
+<p>However, for anisotropic processes:</p>
+<p><span class="math display">\[
+\gamma(h,\theta)
+\]</span></p>
+<p>depends on both distance and direction. Therefore, directional variograms or variogram maps should be used to identify and model anisotropy.</p>
+</section>
+<section id="distinguishing-between-isotropy-and-anisotropy" class="level2">
+<h2 class="anchored" data-anchor-id="distinguishing-between-isotropy-and-anisotropy">Distinguishing Between Isotropy and Anisotropy</h2>
+<p>The procedure for distinguishing between <strong>isotropy</strong> and <strong>anisotropy</strong> is based on comparing variogram models calculated in different directions.</p>
+<p>First, directional variograms are calculated for several spatial directions. A variogram model is then fitted separately to each directional variogram.</p>
+<p>The fitted models are compared based on their:</p>
+<ul>
+<li>nugget (<span class="math inline">\(C_0\)</span>),</li>
+<li>sill (<span class="math inline">\(C_0+C_1\)</span>),</li>
+<li>range (<span class="math inline">\(a\)</span>).</li>
+</ul>
+<p>If the fitted variogram parameters are approximately the same in all directions, the spatial process is considered <strong>isotropic</strong>.</p>
+<p>Mathematically:</p>
+<p><span class="math display">\[
+\gamma(h,\theta)=\gamma(h)
+\]</span></p>
+<p>where the semivariance depends only on distance <span class="math inline">\(h\)</span> and not on direction <span class="math inline">\(\theta\)</span>.</p>
+<p>If the variogram parameters differ among directions, the process is considered <strong>anisotropic</strong>:</p>
+<p><span class="math display">\[
+\gamma(h,\theta)\neq\gamma(h)
+\]</span></p>
+<p>where the spatial dependence changes with direction.</p>
+<hr>
+</section>
+<section id="types-of-anisotropy" class="level2">
+<h2 class="anchored" data-anchor-id="types-of-anisotropy">Types of Anisotropy</h2>
+<p>Anisotropy can be classified into three main categories:</p>
+<ol type="1">
+<li>Geometric anisotropy</li>
+<li>Zonal anisotropy</li>
+<li>Mixed anisotropy</li>
+</ol>
+<hr>
+</section>
+<section id="geometric-anisotropy" class="level2">
+<h2 class="anchored" data-anchor-id="geometric-anisotropy">1. Geometric Anisotropy</h2>
+<p>In <strong>geometric anisotropy</strong>, the sill remains constant across directions, but the range changes with direction.</p>
+<p>The variogram reaches the same sill:</p>
+<p><span class="math display">\[
+C_0+C_1=\text{constant}
+\]</span></p>
+<p>but the range varies:</p>
+<p><span class="math display">\[
+a(\theta_1)\neq a(\theta_2)
+\]</span></p>
+<p>This means that the distance over which spatial correlation exists differs depending on the direction.</p>
+<p>For example:</p>
+<ul>
+<li>Along one direction, spatial dependence may extend up to 1500 m.</li>
+<li>Along another direction, spatial dependence may disappear after 500 m.</li>
+</ul>
+<p>When sample pairs have the same separation distance but different directions:</p>
+<ul>
+<li>the sill remains the same,</li>
+<li>the range changes.</li>
+</ul>
+<p>Geometric anisotropy is often handled by rescaling distances along different directions.</p>
+<hr>
+</section>
+<section id="zonal-anisotropy" class="level2">
+<h2 class="anchored" data-anchor-id="zonal-anisotropy">2. Zonal Anisotropy</h2>
+<p>In <strong>zonal anisotropy</strong>, both the sill and range vary with distance and direction.</p>
+<p>The variogram parameters satisfy:</p>
+<p><span class="math display">\[
+C_0+C_1(\theta_1)\neq C_0+C_1(\theta_2)
+\]</span></p>
+<p>and:</p>
+<p><span class="math display">\[
+a(\theta_1)\neq a(\theta_2)
+\]</span></p>
+<p>Therefore, observations separated by the same distance can have different levels of spatial variability depending on direction.</p>
+<p>A zonal anisotropic model usually consists of two or more directional variogram structures:</p>
+<p><span class="math display">\[
+\gamma(h)=
+\gamma_1(h)+\gamma_2(h)+...+\gamma_n(h)
+\]</span></p>
+<p>Zonal anisotropy is less common in natural processes because it requires different spatial structures operating in different directions.</p>
+<hr>
+</section>
+<section id="mixed-anisotropy" class="level2">
+<h2 class="anchored" data-anchor-id="mixed-anisotropy">3. Mixed Anisotropy</h2>
+<p><strong>Mixed anisotropy</strong> occurs when both the sill and range vary with direction.</p>
+<p>Therefore:</p>
+<p><span class="math display">\[
+C_0+C_1(\theta)
+\]</span></p>
+<p>and:</p>
+<p><span class="math display">\[
+a(\theta)
+\]</span></p>
+<p>change with direction.</p>
+<p>This type of anisotropy is commonly observed in natural phenomena.</p>
+<p>Examples include:</p>
+<ul>
+<li>geological formations,</li>
+<li>soil properties,</li>
+<li>environmental processes.</li>
+</ul>
+<p>For example, geological structures often have:</p>
+<ul>
+<li>a larger spatial range in the horizontal direction,</li>
+<li>a smaller spatial range in the vertical direction.</li>
+</ul>
+<p>This occurs because geological layers usually extend farther horizontally than vertically.</p>
+<hr>
+</section>
+<section id="summary-of-anisotropy-types" class="level2">
+<h2 class="anchored" data-anchor-id="summary-of-anisotropy-types">Summary of Anisotropy Types</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Type</th>
+<th>Sill changes with direction?</th>
+<th>Range changes with direction?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Isotropy</td>
+<td>No</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Geometric anisotropy</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>Zonal anisotropy</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>Mixed anisotropy</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>In practice, directional variograms and variogram maps are used to identify these anisotropic structures before fitting a final spatial model.</p>
+</section>
+</section>
+<section id="how-to-proceed" class="level1">
+<h1>How to proceed</h1>
+<p>There is clear evidence of anisotropy in the variograms, with the highest level of spatial correlation shown in the 45 degree variogram. The <span class="math inline">\(45^\circ\)</span> variogram shows the strongest spatial continuity, as it reaches the sill at the greatest distance, indicating a longer range of spatial dependence.</p>
+<p>When the sill appears to be different in different directions, this suggests a trend in the data. There are a few ways to address this:</p>
+<ol type="1">
+<li><p>fit a nested semivariogram model with an infinite range in one direction</p></li>
+<li><p>fit a semivariogram along one direction with no trend</p></li>
+<li><p>fit a trend to the data, and then fit a semivariogram with a sill to the residuals</p></li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

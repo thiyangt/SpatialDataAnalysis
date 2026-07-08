@@ -27,7 +27,40 @@ Task: Predict temperature for unobserved locations
 
 [Spatial Neighbours](/week5/index.html)
 
-## Week 6: 11 June 2026
+## Week 6-9: 11/12/18 June 2026
 
 [Spatial Data Science](https://thiyangt.github.io/spatialmodellingversion2/#/title-slide)
+
+## Week 10: 9 July 2026
+
+[Spatial Interpolation with meuse dataset](/week6/index.html)
+
+
+# Mini Project
+
+Deadline: 20 July  2026
+
+Task 1: Develop an interactive application to visualize the empirical variogram by grouping spatial point pairs into distance bins. The app should allow users to explore how different binning strategies affect the estimation of spatial correlation and should implement an appropriate method for selecting the optimal number of distance bins.
+
+Task 2: Develop a spatial prediction model to estimate temperature across Sri Lanka using kriging interpolation. The project aims to compare kriging-based predictions with alternative interpolation approaches and evaluate their predictive performance.
+
+All work must be fully reproducible. Please upload a single ZIP folder to Google Classroom.
+
+The ZIP folder must contain **only the following two subfolders**:
+
+1. **appAS2022xxx**
+
+   * This folder should contain the Shiny application files only.
+
+2. **temAS2022xxx**
+
+   * This folder should contain only:
+
+     * Dataset file(s)
+     * `.qmd` or `.Rmd` file
+     * Generated PDF output file
+
+Please ensure that the folder structure strictly follows the above format. Any submission that does not comply with these requirements will **not be evaluated and will receive a mark of zero**.
+
+Upload your work to the Google Classroom.
 

@@ -376,5 +376,488 @@
     "title": "Spatial Statistics",
     "section": "Geostatistical Theory",
     "text": "Geostatistical Theory\n\nMean\nVariance\nAutocovariance\nAutocorrelation"
+  },
+  {
+    "objectID": "week6/index.html",
+    "href": "week6/index.html",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "",
+    "text": "Kriging is a geostatistical interpolation method that predicts the value of a variable at an unobserved location using a weighted average of nearby observed values. Unlike deterministic interpolation methods such as inverse distance weighting (IDW), kriging explicitly incorporates the spatial correlation among observations through a variogram model.\nThe underlying assumption of kriging is that observations located closer together tend to be more similar than those farther apart. This spatial dependence is quantified using the variogram, which describes how similarity decreases with increasing distance.\nSuppose observations are available at \\(n\\) locations, \\(\\mathbf{s}_1, \\mathbf{s}_2, \\ldots, \\mathbf{s}_n\\). The predicted value at an unsampled location \\(\\mathbf{s}_0\\) is given by\n\\[\n\\hat{Z}(\\mathbf{s}_0)=\\sum_{i=1}^{n}\\lambda_i Z(\\mathbf{s}_i),\n\\]\nwhere\n\n\\(\\hat{Z}(\\mathbf{s}_0)\\) is the predicted value at location \\(\\mathbf{s}_0\\).\n\\(Z(\\mathbf{s}_i)\\) is the observed value at location \\(\\mathbf{s}_i\\).\n\\(\\lambda_i\\) is the weight assigned to the \\(i\\)th observation.\n\nUnlike deterministic interpolation methods, the kriging weights are not determined solely by distance. Instead, they are computed using the spatial covariance (or variogram), so that observations with stronger spatial correlation have greater influence on the prediction."
+  },
+  {
+    "objectID": "week6/index.html#properties-of-kriging",
+    "href": "week6/index.html#properties-of-kriging",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Properties of Kriging",
+    "text": "Properties of Kriging\nKriging estimates have the following desirable properties:\n\nLinear: Predictions are weighted sums of observed values.\nUnbiased: The expected prediction equals the true value.\nBest (Minimum Variance): Among all linear unbiased estimators, kriging minimizes the prediction variance.\n\nThese properties are collectively referred to as the Best Linear Unbiased Predictor (BLUP)."
+  },
+  {
+    "objectID": "week6/index.html#constraint-on-the-weights",
+    "href": "week6/index.html#constraint-on-the-weights",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Constraint on the Weights",
+    "text": "Constraint on the Weights\nFor Ordinary Kriging, the weights satisfy\n\\[\n\\sum_{i=1}^{n}\\lambda_i = 1,\n\\]\nwhich guarantees that the estimator is unbiased.\nThe kriging weights are obtained by solving the following system of equations:\n\\[\n\\begin{bmatrix}\n\\Gamma & \\mathbf{1} \\\\\n\\mathbf{1}^\\top & 0\n\\end{bmatrix}\n\\begin{bmatrix}\n\\boldsymbol{\\lambda} \\\\\n\\mu\n\\end{bmatrix}\n=\n\\begin{bmatrix}\n\\boldsymbol{\\gamma}_0 \\\\\n1\n\\end{bmatrix},\n\\]\nwhere\n\n\\(\\Gamma\\) is the variogram (or covariance) matrix among the observed locations.\n\\(\\boldsymbol{\\gamma}_0\\) is the vector of semivariances between the prediction location and the observed locations.\n\\(\\boldsymbol{\\lambda}\\) is the vector of kriging weights.\n\\(\\mu\\) is the Lagrange multiplier used to enforce the unbiasedness constraint."
+  },
+  {
+    "objectID": "week6/index.html#kriging-variance",
+    "href": "week6/index.html#kriging-variance",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Kriging Variance",
+    "text": "Kriging Variance\nA major advantage of kriging is that it provides both predictions and their associated uncertainty. The kriging variance is given by\n\\[\n\\sigma_K^2\n=\n\\sum_{i=1}^{n}\\lambda_i\\,\\gamma(\\mathbf{s}_i,\\mathbf{s}_0)\n+\\mu,\n\\]\nwhere\n\n\\(\\sigma_K^2\\) is the kriging variance.\n\\(\\gamma(\\mathbf{s}_i,\\mathbf{s}_0)\\) is the semivariance between the observed location \\(\\mathbf{s}_i\\) and the prediction location \\(\\mathbf{s}_0\\).\n\nThe kriging variance depends on the spatial configuration of the data and the fitted variogram model. It does not depend on the observed values themselves."
+  },
+  {
+    "objectID": "week6/index.html#types-of-kriging",
+    "href": "week6/index.html#types-of-kriging",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Types of Kriging",
+    "text": "Types of Kriging\nThe most commonly used kriging methods are:\n\nSimple Kriging (SK): Assumes the population mean is known and constant.\nOrdinary Kriging (OK): Assumes an unknown but constant local mean.\nUniversal Kriging (UK): Assumes the mean varies spatially according to a deterministic trend.\nRegression Kriging (RK): Combines regression with kriging of the residuals.\nCo-Kriging: Uses one or more auxiliary variables that are spatially correlated with the primary variable."
+  },
+  {
+    "objectID": "week6/index.html#summary",
+    "href": "week6/index.html#summary",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Summary",
+    "text": "Summary\nAn omnidirectional variogram is useful when the process is approximately isotropic:\n\\[\n\\gamma(h)\n\\]\ndepends only on distance.\nHowever, for anisotropic processes:\n\\[\n\\gamma(h,\\theta)\n\\]\ndepends on both distance and direction. Therefore, directional variograms or variogram maps should be used to identify and model anisotropy."
+  },
+  {
+    "objectID": "about.html#week-6-9-111218-june-2026",
+    "href": "about.html#week-6-9-111218-june-2026",
+    "title": "About",
+    "section": "Week 6-9: 11/12/18 June 2026",
+    "text": "Week 6-9: 11/12/18 June 2026\nSpatial Data Science"
+  },
+  {
+    "objectID": "about.html#week-10-9-july-2026",
+    "href": "about.html#week-10-9-july-2026",
+    "title": "About",
+    "section": "Week 10: 9 July 2026",
+    "text": "Week 10: 9 July 2026\nSpatial Interpolation with meuse dataset"
+  },
+  {
+    "objectID": "week6/index.html#ordinary-kriging-ok",
+    "href": "week6/index.html#ordinary-kriging-ok",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Ordinary Kriging (OK)",
+    "text": "Ordinary Kriging (OK)\nOrdinary Kriging assumes that the mean is unknown but constant:\n\\(E[Z(s)] = \\mu\\)\nTo ensure an unbiased estimator, the weights must satisfy:\n\\(\\sum_{i=1}^{n}\\lambda_i = 1\\)\nThe kriging weights are obtained by solving:\n\\[\n\\begin{bmatrix}\n\\gamma_{11} & \\cdots & \\gamma_{1n} & 1\\\\\n\\vdots & \\ddots & \\vdots & \\vdots\\\\\n\\gamma_{n1} & \\cdots & \\gamma_{nn} & 1\\\\\n1 & \\cdots & 1 & 0\n\\end{bmatrix}\n\\begin{bmatrix}\n\\lambda_1\\\\\n\\vdots\\\\\n\\lambda_n\\\\\n\\eta\n\\end{bmatrix}\n=\n\\begin{bmatrix}\n\\gamma_{10}\\\\\n\\vdots\\\\\n\\gamma_{n0}\\\\\n1\n\\end{bmatrix}\n\\]\nwhere \\(\\eta\\) is the Lagrange multiplier."
+  },
+  {
+    "objectID": "week6/index.html#simple-kriging-sk",
+    "href": "week6/index.html#simple-kriging-sk",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Simple Kriging (SK)",
+    "text": "Simple Kriging (SK)\nSimple Kriging assumes that the mean is known:\n\\(E[Z(s)] = \\mu\\)\nThere is no constraint that the weights must sum to one.\nThe weights are obtained from:\n\\(\\mathbf{C}\\lambda=\\mathbf{c}_0\\)\nwhere \\(\\mathbf{C}\\) is the covariance matrix between observed locations and \\(\\mathbf{c}_0\\) is the covariance vector between observations and the prediction location.\nThe weights are obtained from:\n\\(\\mathbf{C}\\boldsymbol{\\lambda}=\\mathbf{c}_0\\)\nwhere \\(\\mathbf{C}\\) is the covariance matrix between observed locations and \\(\\mathbf{c}_0\\) is the covariance vector between observations and the prediction location.\nIn matrix form,\n\\[\n\\begin{bmatrix}\nC(s_1,s_1) & C(s_1,s_2) & \\cdots & C(s_1,s_n)\\\\\nC(s_2,s_1) & C(s_2,s_2) & \\cdots & C(s_2,s_n)\\\\\n\\vdots & \\vdots & \\ddots & \\vdots\\\\\nC(s_n,s_1) & C(s_n,s_2) & \\cdots & C(s_n,s_n)\n\\end{bmatrix}\n\\begin{bmatrix}\n\\lambda_1\\\\\n\\lambda_2\\\\\n\\vdots\\\\\n\\lambda_n\n\\end{bmatrix}\n=\n\\begin{bmatrix}\nC(s_1,s_0)\\\\\nC(s_2,s_0)\\\\\n\\vdots\\\\\nC(s_n,s_0)\n\\end{bmatrix}\n\\]\nwhere:\n\n\\(\\mathbf{C}\\) is the covariance matrix among the observed locations.\n\\(\\boldsymbol{\\lambda}\\) is the vector of kriging weights.\n\\(\\mathbf{c}_0\\) is the covariance vector between observed locations and the prediction location \\(s_0\\)."
+  },
+  {
+    "objectID": "week6/index.html#universal-kriging-uk",
+    "href": "week6/index.html#universal-kriging-uk",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Universal Kriging (UK)",
+    "text": "Universal Kriging (UK)\nUniversal Kriging assumes that the mean varies according to known explanatory variables:\n\\(E[Z(s)] = \\sum_{k=1}^{p}\\beta_k f_k(s)\\)\nThe weights must satisfy:\n\\(\\sum_{i=1}^{n}\\lambda_i f_k(s_i)=f_k(s_0)\\)\nfor \\(k=1,\\ldots,p\\).\nFor example, if the trend is:\n\\(m(s)=\\beta_0+\\beta_1x+\\beta_2y\\)\nthen the constraints are:\n\\(\\sum_i\\lambda_i=1\\)\n\\(\\sum_i\\lambda_i x_i=x_0\\)\n\\(\\sum_i\\lambda_i y_i=y_0\\)"
+  },
+  {
+    "objectID": "week6/index.html#regression-kriging-rk",
+    "href": "week6/index.html#regression-kriging-rk",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Regression Kriging (RK)",
+    "text": "Regression Kriging (RK)\nRegression Kriging separates the trend and the spatial residual:\n\\(Z(s)=m(s)+\\varepsilon(s)\\)\nThe prediction is:\n\\(\\hat{Z}(s_0)=\\hat{m}(s_0)+\\sum_i\\lambda_i e(s_i)\\)\nwhere \\(e(s_i)\\) represents the spatial residuals.\nThe residual weights satisfy:\n\\(\\sum_i\\lambda_i=1\\)"
+  },
+  {
+    "objectID": "week6/index.html#summary-of-weight-constraints",
+    "href": "week6/index.html#summary-of-weight-constraints",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Summary of Weight Constraints",
+    "text": "Summary of Weight Constraints\n\n\n\n\n\n\n\n\nMethod\nMean Assumption\nWeight Constraint\n\n\n\n\nSimple Kriging\nKnown constant mean\nNo constraint\n\n\nOrdinary Kriging\nUnknown constant mean\n\\(\\sum_i\\lambda_i=1\\)\n\n\nUniversal Kriging\nTrend-based mean\n\\(\\sum_i\\lambda_i f_k(s_i)=f_k(s_0)\\)\n\n\nRegression Kriging\nRegression trend + spatial residual\n\\(\\sum_i\\lambda_i=1\\)\n\n\n\nTherefore, Ordinary Kriging requires the weights to sum to one, while Universal Kriging extends this condition to preserve the underlying trend structure."
+  },
+  {
+    "objectID": "week6/index.html#introduction-to-spatial-stationarity",
+    "href": "week6/index.html#introduction-to-spatial-stationarity",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Introduction to Spatial Stationarity",
+    "text": "Introduction to Spatial Stationarity\nStationarity is a fundamental assumption in geostatistics because it allows observations from different locations to be combined to estimate spatial dependence. A spatial process is stationary when its statistical properties remain unchanged across space.\nA spatial process is strictly stationary if the joint probability distribution remains the same after shifting any set of locations. A less restrictive assumption is weak stationarity (second-order stationarity), which assumes that the mean and variance are constant and that the covariance between two observations depends only on their separation distance (h), rather than their actual locations.\nFor variogram analysis, intrinsic stationarity is particularly important. It assumes that the variance of differences between observations depends only on the separation distance:\n\\[Var(Z(x+h)-Z(x)) = 2\\gamma(h)\\]\nwhere \\(\\gamma(h)\\) is the variogram function.\nIf a dataset contains a spatial trend, the variogram may continue increasing instead of reaching a stable sill. Therefore, identifying and modelling trends before variogram analysis is essential."
+  },
+  {
+    "objectID": "week6/index.html#visual-assessment-of-spatial-trends-in-zinc-concentration",
+    "href": "week6/index.html#visual-assessment-of-spatial-trends-in-zinc-concentration",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Visual Assessment of Spatial Trends in Zinc Concentration",
+    "text": "Visual Assessment of Spatial Trends in Zinc Concentration\nThe meuse dataset contains measurements of zinc concentration collected from a floodplain area. Since zinc concentration is highly skewed, the logarithm of zinc concentration is used for analysis.\n\nlibrary(sf)\nlibrary(ggplot2)\nlibrary(dplyr)\n\n# Convert coordinates into a data frame\nmeuse_df &lt;- as.data.frame(meuse)\n\n# Add log-transformed zinc\nmeuse_df &lt;- meuse_df %&gt;%\n  mutate(log_zinc = log(zinc),\n         sqrt_dist = sqrt(dist))\n\n\nggplot(meuse_df, aes(x = x, y = log_zinc)) +\n  geom_point() +\n  geom_smooth(method = \"lm\", se = FALSE) +\n  labs(\n    x = \"X coordinate\",\n    y = \"Log Zinc concentration\",\n    title = \"Spatial Trend of Log Zinc Concentration Along X Coordinate\"\n  )\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\n\nggplot(meuse_df, aes(x = y, y = log_zinc)) +\n  geom_point() +\n  geom_smooth(method = \"lm\", se = FALSE) +\n  labs(\n    x = \"Y coordinate\",\n    y = \"Log Zinc concentration\",\n    title = \"Spatial Trend of Log Zinc Concentration Along Y Coordinate\"\n  )\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\n\nggplot(meuse_df, aes(x = dist, y = log_zinc)) +\n  geom_point() +\n  geom_smooth(method = \"lm\", se = FALSE) +\n  labs(\n    x = \"Distance from river\",\n    y = \"Log Zinc concentration\",\n    title = \"Relationship Between Log Zinc Concentration and Distance\"\n  )\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\n\nggplot(meuse_df, aes(x = sqrt_dist, y = log_zinc)) +\n  geom_point() +\n  geom_smooth(method = \"lm\", se = FALSE) +\n  labs(\n    x = \"Square root of distance from river\",\n    y = \"Log Zinc concentration\",\n    title = \"Linearised Relationship Between Zinc Concentration and Distance\"\n  )\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\nThe square-root transformation produces an approximately linear relationship, making it more appropriate for modelling the spatial trend."
+  },
+  {
+    "objectID": "week6/index.html#why-is-a-linear-relationship-important",
+    "href": "week6/index.html#why-is-a-linear-relationship-important",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Why is a Linear Relationship Important?",
+    "text": "Why is a Linear Relationship Important?\nA linear trend model is important because geostatistical methods require separation of the deterministic trend component from the random spatial component.\nIn this context, it is important to have a linear relationship because many spatial statistical methods, especially geostatistical models and variogram analysis, rely on the assumption that the systematic trend (or mean structure) can be modelled separately from the spatial correlation.\nWe now have\n\\[log(zinc) = \\beta_0 + \\beta_1\\sqrt{distance} + \\epsilon\\]\nThis is important because:\n\nBetter estimation of the trend\n\n\nA linear model provides a simple and interpretable estimate of the large-scale trend (mean variation) in zinc concentration.\nThe spatial model can then focus on the remaining spatial dependence (the residuals).\n\n\nSatisfies assumptions of spatial modelling\n\n\nMany geostatistical methods assume that after removing a trend, the residuals are approximately stationary.\nIf a strong nonlinear trend remains, the variogram may continue increasing with distance instead of reaching a stable sill.\n\n\nImproves variogram interpretation\n\nThe variogram measures spatial dependence:\n\\[\n\\gamma(h)=\\frac{1}{2}Var(Z(x+h)-Z(x))\n\\]\nIf there is an unmodelled trend, differences between distant observations become larger because of the trend rather than because of spatial correlation.\nThis causes the variogram to rise continuously and prevents identifying important parameters such as the range and sill.\nDetailed explanation of the above:\nIf there is an unmodelled trend, differences between distant observations become larger because of the trend rather than because of spatial correlation.\nThe spatial process can be written as:\n\\(Z(s) = m(s) + \\varepsilon(s)\\)\nwhere:\n\n\\(Z(s)\\) is the observed value at location \\(s\\).\n\\(m(s)\\) is the spatial trend (mean structure).\n\\(\\varepsilon(s)\\) is the spatially correlated random component.\n\nFor two locations separated by a distance vector \\(h\\), the difference between observations is:\n\\(Z(s+h)-Z(s) = [m(s+h)-m(s)] + [\\varepsilon(s+h)-\\varepsilon(s)]\\)\nThe variogram is defined as:\n\\(\\gamma(h)=\\frac{1}{2}Var[Z(s+h)-Z(s)]\\)\nWhen the trend \\(m(s)\\) is not modelled, the term:\n\\(m(s+h)-m(s)\\)\nincreases as the distance \\(h\\) increases. As a result, the variogram may continue to increase:\n\\(\\gamma(h) \\uparrow \\quad \\text{as } h \\uparrow\\)\neven when the spatial correlation has already reached a stable level.\nA common spatial trend model is:\n\\(m(s)=\\beta_0+\\beta_1x+\\beta_2y\\)\nwhere \\(x\\) and \\(y\\) are spatial coordinates. After removing the trend, the residuals are:\n\\(R(s)=Z(s)-m(s)\\)\nThe variogram should then be calculated using the residuals:\n\\(\\gamma_R(h)=\\frac{1}{2}Var[R(s+h)-R(s)]\\)\nThis ensures that the variogram measures true spatial dependence rather than the effect of an unmodelled spatial trend.\n\nAllows accurate prediction\n\n\nKriging methods assume that the mean structure is correctly specified.\nIf the relationship between zinc concentration and distance is incorrectly modelled, predictions at unsampled locations will be biased.\n\nTherefore, transforming distance to make the relationship approximately linear is not just a statistical convenience; it helps separate the deterministic trend from the spatial random component, which is essential for reliable spatial prediction."
+  },
+  {
+    "objectID": "week6/index.html#variogram-cloud-and-h-scatterplot",
+    "href": "week6/index.html#variogram-cloud-and-h-scatterplot",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Variogram Cloud and h-Scatterplot",
+    "text": "Variogram Cloud and h-Scatterplot\nSpatial exploratory analysis is important before fitting a variogram model. Two useful tools for exploring spatial dependence are the variogram cloud and the h-scatterplot."
+  },
+  {
+    "objectID": "week6/index.html#variogram-cloud",
+    "href": "week6/index.html#variogram-cloud",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Variogram Cloud",
+    "text": "Variogram Cloud\nThe variogram cloud displays the semivariance for every pair of observations. For two locations \\(s_i\\) and \\(s_j\\), the pairwise semivariance is:\n\\[\n\\gamma_{ij}=\\frac{1}{2}\\left(Z(s_i)-Z(s_j)\\right)^2\n\\]\nwhere:\n\n\\(Z(s_i)\\) and \\(Z(s_j)\\) are observations at two spatial locations.\nThe distance between the locations is represented by \\(h\\).\n\nThe variogram cloud plots:\n\nx-axis: distance between locations (\\(h\\))\ny-axis: pairwise semivariance (\\(\\gamma_{ij}\\))\n\n\nInterpretation\nA variogram cloud is useful for:\n\nDetecting spatial autocorrelation\n\nWhen nearby observations have similar values:\n\\[\nZ(s_i) \\approx Z(s_j)\n\\]\nthe semivariance is small:\n\\[\n\\gamma(h) \\approx 0\n\\]\nThis indicates positive spatial autocorrelation.\n\nIdentifying outliers\n\nPairs with very large semivariance values may indicate:\n\nmeasurement errors\nextreme observations\nunusual spatial patterns\n\n\nDetecting anisotropy\n\nVariogram clouds can be examined in different directions to determine whether spatial dependence changes with direction."
+  },
+  {
+    "objectID": "week6/index.html#relationship-between-h-scatterplot-and-variogram",
+    "href": "week6/index.html#relationship-between-h-scatterplot-and-variogram",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Relationship between h-Scatterplot and Variogram",
+    "text": "Relationship between h-Scatterplot and Variogram\nThe variogram is related to the difference between paired observations:\n\\[\n\\gamma(h)=\\frac{1}{2}Var(Z(s+h)-Z(s))\n\\]\nWhen the h-scatterplot shows strong similarity:\n\\[\nZ(s+h)\\approx Z(s)\n\\]\nthe differences are small, resulting in a small variogram value.\nWhen observations become unrelated:\n\\[\nZ(s+h) \\not\\approx Z(s)\n\\]\nthe differences increase, producing larger variogram values."
+  },
+  {
+    "objectID": "week6/index.html#comparison-of-variogram-cloud-and-h-scatterplot",
+    "href": "week6/index.html#comparison-of-variogram-cloud-and-h-scatterplot",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Comparison of Variogram Cloud and h-Scatterplot",
+    "text": "Comparison of Variogram Cloud and h-Scatterplot\n\n\n\n\n\n\n\n\nMethod\nDisplays\nPurpose\n\n\n\n\nVariogram cloud\nDistance vs pairwise semivariance\nExplore spatial dependence, outliers, and anisotropy\n\n\nh-Scatterplot\n\\(Z(s)\\) vs \\(Z(s+h)\\)\nVisualise spatial correlation at a specific lag\n\n\nEmpirical variogram\nAverage semivariance by distance class\nEstimate a spatial correlation model\n\n\n\nThese exploratory tools help determine whether spatial autocorrelation exists and guide the selection of an appropriate variogram model."
+  },
+  {
+    "objectID": "week6/index.html#variogram-map-for-assessing-directional-dependence-anisotropy-variogram-map",
+    "href": "week6/index.html#variogram-map-for-assessing-directional-dependence-anisotropy-variogram-map",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Variogram Map for Assessing Directional Dependence (Anisotropy Variogram Map )",
+    "text": "Variogram Map for Assessing Directional Dependence (Anisotropy Variogram Map )\nAnother method for evaluating directional dependence in spatial data is the variogram map. Unlike a directional variogram, where point pairs are classified separately by distance and direction, a variogram map considers both distance and direction simultaneously.\nFor two observations:\n\\[\nZ(s) \\quad \\text{and} \\quad Z(s+h)\n\\]\nthe separation vector is:\n\\[\nh=(x,y)\n\\]\nwhere:\n\n\\(x\\) represents the horizontal spatial separation.\n\\(y\\) represents the vertical spatial separation.\n\nFor each pair of observations, the semivariance contribution is calculated as:\n\\[\n\\gamma(h)=\\frac{1}{2}(Z(s)-Z(s+h))^2\n\\]\nThis semivariance value is assigned to the grid cell corresponding to the separation vector \\(h\\)."
+  },
+  {
+    "objectID": "week6/index.html#construction-of-a-variogram-map",
+    "href": "week6/index.html#construction-of-a-variogram-map",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Construction of a Variogram Map",
+    "text": "Construction of a Variogram Map\nThe steps are:\n\nCalculate all possible pairs of observations.\nFor each pair, calculate the separation vector:\n\n\\[\nh=(x_i-x_j,\\ y_i-y_j)\n\\]\n\nCalculate the pairwise semivariance:\n\n\\[\n\\frac{1}{2}(Z(s_i)-Z(s_j))^2\n\\]\n\nAssign the semivariance value to the corresponding location in the variogram map.\n\nThe map is centred at:\n\\[\n(0,0)\n\\]\nbecause \\(h\\) represents a relative distance between locations, not an actual geographical location."
+  },
+  {
+    "objectID": "week6/index.html#symmetry-of-the-variogram-map",
+    "href": "week6/index.html#symmetry-of-the-variogram-map",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Symmetry of the Variogram Map",
+    "text": "Symmetry of the Variogram Map\nThe variogram map is point symmetric around \\((0,0)\\) because:\n\\[\n\\gamma(h)=\\gamma(-h)\n\\]\nThis means that the separation vector:\n\\[\n(x,y)\n\\]\nhas the same semivariance as:\n\\[\n(-x,-y)\n\\]\nTherefore, opposite directions have identical semivariance values."
+  },
+  {
+    "objectID": "week6/index.html#interpreting-a-variogram-map",
+    "href": "week6/index.html#interpreting-a-variogram-map",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Interpreting a Variogram Map",
+    "text": "Interpreting a Variogram Map\nThe colour intensity represents the magnitude of semivariance.\n\nSmall semivariance:\n\n\\[\n\\gamma(h) \\approx 0\n\\]\nindicates that observations separated by distance \\(h\\) are similar.\n\nLarge semivariance:\n\n\\[\n\\gamma(h) \\text{ is large}\n\\]\nindicates weaker spatial similarity.\nA threshold can be applied so that only grid cells containing a minimum number of point pairs are displayed. This avoids displaying unreliable estimates based on very few observations."
+  },
+  {
+    "objectID": "week6/index.html#detecting-anisotropy",
+    "href": "week6/index.html#detecting-anisotropy",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Detecting Anisotropy",
+    "text": "Detecting Anisotropy\nIf spatial dependence is the same in all directions, the variogram map will appear approximately circular.\nHowever, if the map is elongated in one direction, it indicates anisotropy.\nFor example:\n\nA longer range along the north-east to south-west direction indicates stronger spatial continuity in that direction.\nA shorter range in other directions indicates weaker spatial dependence."
+  },
+  {
+    "objectID": "week6/index.html#example-meuse-zinc-data",
+    "href": "week6/index.html#example-meuse-zinc-data",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Example: Meuse Zinc Data",
+    "text": "Example: Meuse Zinc Data\nFor the log-transformed zinc concentrations in the topsoil of the Meuse river area:\n\\[\nY=\\log(Zinc)\n\\]\nthe variogram map can reveal directional dependence.\nIf the variogram map shows an elongated pattern along the north-east to south-west axis, it suggests that:\n\\[\nCor(Z(s),Z(s+h))\n\\]\nremains stronger for locations separated along this direction.\nThis indicates anisotropic spatial autocorrelation."
+  },
+  {
+    "objectID": "week6/index.html#r-code-variogram-map",
+    "href": "week6/index.html#r-code-variogram-map",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "R Code: Variogram Map",
+    "text": "R Code: Variogram Map\n\nlibrary(sf)\nlibrary(gstat)\n\n# Load Meuse data\ndata(meuse)\n\n# Convert to sf object\nmeuse_sf &lt;- st_as_sf(\n  meuse,\n  coords = c(\"x\", \"y\"),\n  crs = 28992\n)\n\n# Variogram map\nvg_map &lt;- variogram(\n  log(zinc) ~ 1,\n  meuse_sf,\n  cutoff = 1000,\n  width = 100,\n  map = TRUE\n)\n\n# Plot variogram map\nplot(\n  vg_map,\n  main = \"Variogram Map of log(Zinc)\"\n)\n\n\n\n\n\n\n\n\n\n# Variogram map\nvg_map &lt;- variogram(\n  log(zinc) ~ 1,\n  meuse_sf,\n  cutoff = 1500,\n  width = 50,\n  map = TRUE\n)\n\n# Plot variogram map\nplot(\n  vg_map,\n  main = \"Variogram Map of log(Zinc)\"\n)\n\n\n\n\n\n\n\n\nThe shape of the variogram map helps identify whether the spatial correlation structure changes with direction, providing evidence of anisotropy."
+  },
+  {
+    "objectID": "week6/index.html#cutoff-and-width-parameters-in-a-variogram-map",
+    "href": "week6/index.html#cutoff-and-width-parameters-in-a-variogram-map",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Cutoff and Width Parameters in a Variogram Map",
+    "text": "Cutoff and Width Parameters in a Variogram Map\nWhen creating a variogram map using gstat::variogram(), the parameters cutoff and width control the spatial lag distances used for calculating semivariance values.\nExample:\n\nvg_map &lt;- variogram(\n  log(zinc) ~ 1,\n  meuse_sf,\n  cutoff = 1500,\n  width = 50,\n  map = TRUE\n)"
+  },
+  {
+    "objectID": "week6/index.html#cutoff",
+    "href": "week6/index.html#cutoff",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "1. Cutoff",
+    "text": "1. Cutoff\nThe cutoff parameter defines the maximum separation distance between pairs of observations included in the variogram calculation.\nFor example:\n\ncutoff = 1500\n\nmeans that only observation pairs separated by a distance less than or equal to 1500 units are considered.\nMathematically:\n\\[\n0 &lt; ||h|| \\leq 1500\n\\]\nwhere:\n\n\\(h\\) is the separation vector between two locations.\n\\(||h||\\) is the distance between locations.\n\nPairs with distances greater than the cutoff value are ignored.\n\nEffect of changing cutoff\nA smaller cutoff:\n\ncutoff = 500\n\nfocuses on short-distance spatial dependence and is useful for studying local autocorrelation.\nA larger cutoff:\n\ncutoff = 3000\n\nincludes more distant pairs and helps identify the overall spatial dependence range."
+  },
+  {
+    "objectID": "week6/index.html#width",
+    "href": "week6/index.html#width",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "2. Width",
+    "text": "2. Width\nThe width parameter defines the size of the grid cells used to group separation vectors in the variogram map.\nFor example:\n\nwidth = 50\n\nmeans that the separation distances are divided into intervals of 50 distance units.\nThe lag distance classes are:\n\n\n\nDistance range\nLag cell\n\n\n\n\n0–50\n1\n\n\n50–100\n2\n\n\n100–150\n3\n\n\n…\n…\n\n\n1450–1500\n30\n\n\n\nEach cell contains all pairs of observations whose separation vector \\(h=(x,y)\\) falls within that region."
+  },
+  {
+    "objectID": "week6/index.html#relationship-between-cutoff-and-width",
+    "href": "week6/index.html#relationship-between-cutoff-and-width",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Relationship Between Cutoff and Width",
+    "text": "Relationship Between Cutoff and Width\nThe approximate number of distance classes is:\n\\[\n\\text{Number of lag classes}\n=\n\\frac{\\text{cutoff}}{\\text{width}}\n\\]\nFor the example:\n\\[\n\\frac{1500}{50}=30\n\\]\nTherefore, the variogram map contains approximately 30 distance classes in each direction around the origin."
+  },
+  {
+    "objectID": "week6/index.html#interpretation-of-the-variogram-map",
+    "href": "week6/index.html#interpretation-of-the-variogram-map",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Interpretation of the Variogram Map",
+    "text": "Interpretation of the Variogram Map\nA variogram map is centred at:\n\\[\n(0,0)\n\\]\nbecause it represents the separation vector:\n\\[\nh=(x_i-x_j,\\ y_i-y_j)\n\\]\nrather than the geographical coordinates of the sampling locations.\nFor every pair of observations, the semivariance contribution is calculated as:\n\\[\n\\gamma(h)=\\frac{1}{2}(Z(s)-Z(s+h))^2\n\\]\nand assigned to the grid cell corresponding to the separation vector \\(h\\).\nThe colour intensity in each cell represents the magnitude of the average semivariance.\n\nSmall values of \\(\\gamma(h)\\) indicate similar observations and stronger spatial autocorrelation.\nLarge values of \\(\\gamma(h)\\) indicate dissimilar observations and weaker spatial dependence."
+  },
+  {
+    "objectID": "week6/index.html#values-plotted-in-a-variogram-map-cell",
+    "href": "week6/index.html#values-plotted-in-a-variogram-map-cell",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Values Plotted in a Variogram Map Cell",
+    "text": "Values Plotted in a Variogram Map Cell\nIn a variogram map, each grid cell contains multiple pairs of observations. Each pair contributes a different semivariance value. Since a single cell cannot display all these values separately, the values are summarized.\nFor each pair of locations:\n\\[\nZ(s_i) \\quad \\text{and} \\quad Z(s_i+h)\n\\]\nthe pairwise semivariance contribution is calculated as:\n\\[\n\\gamma_i(h)=\\frac{1}{2}(Z(s_i)-Z(s_i+h))^2\n\\]\nwhere:\n\n\\(Z(s_i)\\) is the value at location \\(s_i\\).\n\\(Z(s_i+h)\\) is the value at a location separated by lag vector \\(h\\)."
+  },
+  {
+    "objectID": "week6/index.html#aggregating-values-within-a-grid-cell",
+    "href": "week6/index.html#aggregating-values-within-a-grid-cell",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Aggregating Values Within a Grid Cell",
+    "text": "Aggregating Values Within a Grid Cell\nSuppose a grid cell contains \\(N_h\\) pairs of observations. The variogram map assigns the average semivariance of these pairs to that cell:\n\\[\n\\gamma(h)=\n\\frac{1}{N_h}\n\\sum_{i=1}^{N_h}\n\\frac{1}{2}(Z(s_i)-Z(s_i+h))^2\n\\]\nwhere:\n\n\\(N_h\\) is the number of point pairs falling within the grid cell.\n\\(\\gamma(h)\\) is the value plotted in the heat map.\n\nTherefore, the colour of each cell represents the mean semivariance, not individual pairwise semivariances."
+  },
+  {
+    "objectID": "week6/index.html#example",
+    "href": "week6/index.html#example",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Example",
+    "text": "Example\nAssume a grid cell contains five pairs of observations. The calculated semivariances are:\n\n\n\nPair\nSemivariance\n\n\n\n\n1\n2.1\n\n\n2\n3.0\n\n\n3\n2.5\n\n\n4\n4.0\n\n\n5\n3.4\n\n\n\nThe value displayed in the heat map cell is:\n\\[\n\\gamma(h)=\n\\frac{2.1+3.0+2.5+4.0+3.4}{5}\n\\]\n\\[\n\\gamma(h)=3.0\n\\]\nThus, the heat map colour corresponds to a semivariance value of \\(3.0\\)."
+  },
+  {
+    "objectID": "week6/index.html#minimum-number-of-pairs",
+    "href": "week6/index.html#minimum-number-of-pairs",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Minimum Number of Pairs",
+    "text": "Minimum Number of Pairs\nCells with very few observation pairs provide unreliable estimates. Therefore, a minimum pair threshold is often applied.\nFor example:\n\nplot(vg_map, threshold = 4)\n\n\n\n\n\n\n\n\nmeans that only cells containing at least 4 observation pairs are displayed."
+  },
+  {
+    "objectID": "week6/index.html#interpretation-2",
+    "href": "week6/index.html#interpretation-2",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Interpretation",
+    "text": "Interpretation\nThe variogram map shows the spatial pattern of average semivariance:\n\nLow values of \\(\\gamma(h)\\) indicate that locations separated by vector \\(h\\) have similar values.\n\n\\[\nZ(s_i) \\approx Z(s_i+h)\n\\]\n\nHigh values of \\(\\gamma(h)\\) indicate that locations separated by vector \\(h\\) have different values.\n\n\\[\n|Z(s_i)-Z(s_i+h)| \\text{ is large}\n\\]\nTherefore, the heat map represents the average spatial dissimilarity for each distance and direction, which allows detection of directional dependence and anisotropy."
+  },
+  {
+    "objectID": "week6/index.html#omnidirectional-variogram",
+    "href": "week6/index.html#omnidirectional-variogram",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Omnidirectional Variogram",
+    "text": "Omnidirectional Variogram\nAn omnidirectional variogram is a variogram calculated by considering all directions together. It assumes that spatial dependence depends only on the separation distance \\(h\\) and not on the direction.\nIn an omnidirectional variogram:\n\\[\n\\gamma(h)\n\\]\nis a function of distance only.\nThe direction of the separation vector is ignored, and all pairs of observations with approximately the same distance are grouped together."
+  },
+  {
+    "objectID": "week6/index.html#calculation-of-omnidirectional-variogram",
+    "href": "week6/index.html#calculation-of-omnidirectional-variogram",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Calculation of Omnidirectional Variogram",
+    "text": "Calculation of Omnidirectional Variogram\nFor two observations:\n\\[\nZ(s_i) \\quad \\text{and} \\quad Z(s_j)\n\\]\nthe separation distance is:\n\\[\nh=||s_i-s_j||\n\\]\nThe pairwise semivariance is:\n\\[\n\\gamma_{ij}\n=\n\\frac{1}{2}(Z(s_i)-Z(s_j))^2\n\\]\nAll pairs with similar distances are grouped into distance classes (bins). The empirical variogram is calculated as:\n\\[\n\\hat{\\gamma}(h)\n=\n\\frac{1}{2N(h)}\n\\sum_{i=1}^{N(h)}\n(Z(s_i)-Z(s_i+h))^2\n\\]\nwhere:\n\n\\(N(h)\\) is the number of point pairs separated by distance \\(h\\).\n\\(\\hat{\\gamma}(h)\\) is the average semivariance at distance \\(h\\)."
+  },
+  {
+    "objectID": "week6/index.html#interpretation-3",
+    "href": "week6/index.html#interpretation-3",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Interpretation",
+    "text": "Interpretation\nThe omnidirectional variogram describes how similarity between observations changes with distance.\n\nPositive spatial autocorrelation\nAt small distances:\n\\[\n\\gamma(h) \\approx 0\n\\]\nbecause nearby observations have similar values.\nAs distance increases:\n\\[\n\\gamma(h) \\uparrow\n\\]\nbecause observations become less similar.\n\n\n\nSpatial independence\nIf there is no spatial correlation:\n\\[\n\\gamma(h)\n\\]\nremains approximately constant for all distances.\nThe variogram reaches a sill quickly.\n\n\n\nTrend effect\nIf an unmodelled spatial trend exists:\n\\[\nZ(s)=m(s)+\\epsilon(s)\n\\]\nthe variogram may continue increasing with distance because differences are caused by changes in the mean function:\n\\[\nm(s)\n\\]\nrather than spatial dependence."
+  },
+  {
+    "objectID": "week6/index.html#r-example-omnidirectional-variogram",
+    "href": "week6/index.html#r-example-omnidirectional-variogram",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "R Example: Omnidirectional Variogram",
+    "text": "R Example: Omnidirectional Variogram\n\nlibrary(sf)\nlibrary(gstat)\n\n# Load Meuse data\ndata(meuse)\n\n# Convert to sf object\nmeuse_sf &lt;- st_as_sf(\n  meuse,\n  coords = c(\"x\", \"y\"),\n  crs = 28992\n)\n\n# Calculate omnidirectional variogram\nvg &lt;- variogram(\n  log(zinc) ~ 1,\n  meuse_sf,\n  cutoff = 1500,\n  width = 100\n)\n\n# Plot empirical variogram\nplot(\n  vg,\n  main = \"Omnidirectional Variogram of log(Zinc)\",\n  xlab = \"Distance h\",\n  ylab = expression(gamma(h))\n)\n\n\n\n\n\n\n\n\nThe width parameter defines the lag distance interval (bin size) used to group pairs of observations based on their separation distance."
+  },
+  {
+    "objectID": "week6/index.html#omnidirectional-vs-directional-variogram",
+    "href": "week6/index.html#omnidirectional-vs-directional-variogram",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Omnidirectional vs Directional Variogram",
+    "text": "Omnidirectional vs Directional Variogram\n\n\n\n\n\n\n\n\nVariogram type\nDirection considered?\nPurpose\n\n\n\n\nOmnidirectional variogram\nNo\nOverall spatial dependence\n\n\nDirectional variogram\nYes\nDetect anisotropy\n\n\nVariogram map\nDistance and direction jointly\nVisualise directional dependence\n\n\n\nAn omnidirectional variogram is usually the first step in spatial analysis. If anisotropy is suspected, directional variograms or variogram maps are used for further investigation."
+  },
+  {
+    "objectID": "week6/index.html#width-parameter-in-an-omnidirectional-variogram",
+    "href": "week6/index.html#width-parameter-in-an-omnidirectional-variogram",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Width Parameter in an Omnidirectional Variogram",
+    "text": "Width Parameter in an Omnidirectional Variogram\nIn gstat::variogram(), the width parameter controls the distance interval (lag bin size) used to group pairs of observations according to their separation distance.\nExample:\n\nvg &lt;- variogram(\n  log(zinc) ~ 1,\n  meuse_sf,\n  cutoff = 1500,\n  width = 100\n)"
+  },
+  {
+    "objectID": "week6/index.html#meaning-of-width",
+    "href": "week6/index.html#meaning-of-width",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Meaning of Width",
+    "text": "Meaning of Width\nThe empirical variogram is not calculated for every individual distance. Instead, observation pairs are grouped into distance classes called lag bins.\nWhen:\n\nwidth = 100\n\nthe separation distances are divided into intervals of 100 distance units.\nThe lag classes are approximately:\n\n\n\nLag class\nDistance range\n\n\n\n\n1\n0–100\n\n\n2\n100–200\n\n\n3\n200–300\n\n\n4\n300–400\n\n\n…\n…\n\n\n15\n1400–1500\n\n\n\nFor each distance class, all point pairs within that interval are used to estimate the average semivariance."
+  },
+  {
+    "objectID": "week6/index.html#semivariance-calculation",
+    "href": "week6/index.html#semivariance-calculation",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Semivariance Calculation",
+    "text": "Semivariance Calculation\nFor two observations:\n\\[\nZ(s_i) \\quad \\text{and} \\quad Z(s_i+h)\n\\]\nthe pairwise semivariance is:\n\\[\n\\gamma_i(h)\n=\n\\frac{1}{2}\n(Z(s_i)-Z(s_i+h))^2\n\\]\nFor a distance class containing \\(N(h)\\) pairs, the empirical variogram value is:\n\\[\n\\hat{\\gamma}(h)\n=\n\\frac{1}{2N(h)}\n\\sum_{i=1}^{N(h)}\n(Z(s_i)-Z(s_i+h))^2\n\\]\nwhere:\n\n\\(N(h)\\) is the number of pairs within the lag distance interval.\n\\(\\hat{\\gamma}(h)\\) is the average semivariance plotted on the variogram."
+  },
+  {
+    "objectID": "week6/index.html#relationship-between-cutoff-and-width-1",
+    "href": "week6/index.html#relationship-between-cutoff-and-width-1",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Relationship Between Cutoff and Width",
+    "text": "Relationship Between Cutoff and Width\nThe approximate number of lag classes is:\n\\[\n\\text{Number of lag classes}\n=\n\\frac{\\text{cutoff}}{\\text{width}}\n\\]\nFor the example:\n\\[\n\\frac{1500}{100}=15\n\\]\nTherefore, the variogram contains approximately 15 distance classes."
+  },
+  {
+    "objectID": "week6/index.html#effect-of-changing-width",
+    "href": "week6/index.html#effect-of-changing-width",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Effect of Changing Width",
+    "text": "Effect of Changing Width\n\nSmaller Width\n\nwidth = 50\n\nDistance classes become:\n\\[\n0-50,\\ 50-100,\\ 100-150,\\ldots\n\\]\nAdvantages:\n\nProvides a more detailed variogram.\nCan detect short-range spatial patterns.\n\nDisadvantages:\n\nFewer point pairs per class.\nVariogram estimates may become noisy.\n\n\n\n\nLarger Width\n\nwidth = 200\n\nDistance classes become:\n\\[\n0-200,\\ 200-400,\\ 400-600,\\ldots\n\\]\nAdvantages:\n\nMore point pairs in each class.\nProduces a smoother variogram.\n\nDisadvantages:\n\nReduces spatial resolution."
+  },
+  {
+    "objectID": "week6/index.html#interpretation-4",
+    "href": "week6/index.html#interpretation-4",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Interpretation",
+    "text": "Interpretation\nThe width parameter controls the resolution of the distance axis in the variogram.\nA small width gives a detailed but potentially noisy variogram, while a large width gives a smoother but less detailed variogram.\nFor the Meuse zinc example:\n\ncutoff = 1500\nwidth = 100\n\nmeans:\n\nConsider all observation pairs separated by less than 1500 m.\nDivide distances into 100 m intervals.\nCalculate the average semivariance within each interval.\nPlot these averages to obtain the empirical omnidirectional variogram.\n\n\n# Calculate omnidirectional variogram\nvg &lt;- variogram(\n  log(zinc) ~ 1,\n  meuse_sf,\n  cutoff = 1500,\n  width = 200\n)\n\n# Plot empirical variogram\nplot(\n  vg,\n  main = \"Omnidirectional Variogram of log(Zinc)\",\n  xlab = \"Distance h\",\n  ylab = expression(gamma(h))\n)\n\n\n\n\n\n\n\n\nWe will use width=100."
+  },
+  {
+    "objectID": "week6/index.html#fitting-an-omnidirectional-variogram",
+    "href": "week6/index.html#fitting-an-omnidirectional-variogram",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Fitting an Omnidirectional Variogram",
+    "text": "Fitting an Omnidirectional Variogram\nAn omnidirectional variogram assumes that spatial dependence depends only on the separation distance \\(h\\) and not on the direction.\nThe empirical variogram is estimated as:\n\\[\n\\hat{\\gamma}(h)\n=\n\\frac{1}{2N(h)}\n\\sum_{i=1}^{N(h)}\n(Z(s_i)-Z(s_i+h))^2\n\\]\nwhere:\n\n\\(N(h)\\) is the number of observation pairs separated by distance \\(h\\).\n\\(\\hat{\\gamma}(h)\\) is the estimated semivariance.\n\nA theoretical variogram model is then fitted to the empirical variogram."
+  },
+  {
+    "objectID": "week6/index.html#load-data-and-convert-to-sf-object",
+    "href": "week6/index.html#load-data-and-convert-to-sf-object",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Load Data and Convert to sf Object",
+    "text": "Load Data and Convert to sf Object\n\nlibrary(sf)\nlibrary(gstat)\n\n# Load Meuse data\ndata(meuse)\n\n# Convert to sf object\nmeuse_sf &lt;- st_as_sf(\n  meuse,\n  coords = c(\"x\", \"y\"),\n  crs = 28992\n)"
+  },
+  {
+    "objectID": "week6/index.html#calculate-omnidirectional-empirical-variogram",
+    "href": "week6/index.html#calculate-omnidirectional-empirical-variogram",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Calculate Omnidirectional Empirical Variogram",
+    "text": "Calculate Omnidirectional Empirical Variogram\n\nvg_emp &lt;- variogram(\n  log(zinc) ~ 1,\n  meuse_sf,\n  cutoff = 1500,\n  width = 100\n)\n\n# Plot empirical variogram\nplot(\n  vg_emp,\n  main = \"Empirical Omnidirectional Variogram\",\n  xlab = \"Distance h\",\n  ylab = expression(gamma(h))\n)"
+  },
+  {
+    "objectID": "week6/index.html#define-initial-variogram-model",
+    "href": "week6/index.html#define-initial-variogram-model",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Define Initial Variogram Model",
+    "text": "Define Initial Variogram Model\nA variogram model consists of:\n\nNugget (\\(C_0\\)): variation at very small distances.\nPartial sill (\\(C_1\\)): spatially correlated variation.\nRange (\\(a\\)): distance where spatial correlation disappears.\n\nThe general form is:\n\\[\n\\gamma(h)=C_0+C_1 f(h)\n\\]\nwhere:\n\n\\(C_0\\) = nugget variance.\n\\(C_0+C_1\\) = sill.\n\\(a\\) = range.\n\nFor example, a spherical model:\n\\[\n\\gamma(h)=\nC_0+C_1\n\\left[\n1.5\\frac{h}{a}\n-\n0.5\\left(\\frac{h}{a}\\right)^3\n\\right]\n\\]\nfor:\n\\[\n0&lt;h&lt;a\n\\]\nand:\n\\[\n\\gamma(h)=C_0+C_1\n\\]\nfor:\n\\[\nh\\geq a\n\\]"
+  },
+  {
+    "objectID": "week6/index.html#fit-spherical-variogram-model",
+    "href": "week6/index.html#fit-spherical-variogram-model",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Fit Spherical Variogram Model",
+    "text": "Fit Spherical Variogram Model\n\n# Initial model\nvg_model &lt;- vgm(\n  psill = 0.6,\n  model = \"Sph\",\n  range = 800,\n  nugget = 0.1\n)\n\n# Fit model\nvg_fit &lt;- fit.variogram(\n  vg_emp,\n  model = vg_model\n)\n\nvg_fit\n\n  model      psill    range\n1   Nug 0.06159529   0.0000\n2   Sph 0.58981594 942.5242"
+  },
+  {
+    "objectID": "week6/index.html#plot-fitted-variogram",
+    "href": "week6/index.html#plot-fitted-variogram",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Plot Fitted Variogram",
+    "text": "Plot Fitted Variogram\n\nplot(\n  vg_emp,\n  vg_fit,\n  main = \"Fitted Omnidirectional Variogram\",\n  xlab = \"Distance h\",\n  ylab = expression(gamma(h))\n)"
+  },
+  {
+    "objectID": "week6/index.html#interpretation-of-the-fitted-model",
+    "href": "week6/index.html#interpretation-of-the-fitted-model",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Interpretation of the Fitted Model",
+    "text": "Interpretation of the Fitted Model\nThe fitted variogram provides estimates of:\n\n\n\nParameter\nMeaning\n\n\n\n\nNugget (\\(C_0\\))\nMeasurement error or microscale variation\n\n\nPartial sill (\\(C_1\\))\nSpatially correlated variation\n\n\nSill (\\(C_0+C_1\\))\nTotal variance after reaching stability\n\n\nRange (\\(a\\))\nMaximum distance of spatial dependence\n\n\n\nIf the variogram reaches a sill at distance \\(a\\), observations separated by distances greater than \\(a\\) are approximately spatially independent."
+  },
+  {
+    "objectID": "week6/index.html#interpretation-of-the-fitted-omnidirectional-variogram-model",
+    "href": "week6/index.html#interpretation-of-the-fitted-omnidirectional-variogram-model",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Interpretation of the Fitted Omnidirectional Variogram Model",
+    "text": "Interpretation of the Fitted Omnidirectional Variogram Model\nThe fitted variogram model is:\n\n\n\nModel\nPartial sill (\\(psill\\))\nRange\n\n\n\n\nNug\n0.0616\n0\n\n\nSph\n0.5898\n942.5\n\n\n\nThe fitted model is a nugget + spherical variogram model:\n\\[\n\\gamma(h)=C_0+C_1Sph(h)\n\\]\nwhere:\n\n\\(C_0\\) is the nugget variance.\n\\(C_1\\) is the partial sill representing spatially correlated variation.\n\\(a\\) is the range parameter."
+  },
+  {
+    "objectID": "week6/index.html#nugget-effect",
+    "href": "week6/index.html#nugget-effect",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Nugget Effect",
+    "text": "Nugget Effect\nThe nugget component is:\n\\[\nC_0=0.0616\n\\]\nThe nugget represents variation that occurs at very small spatial distances. It includes:\n\nmeasurement errors,\nmicroscale variation,\nspatial variation occurring at distances smaller than the sampling interval.\n\nThe relatively small nugget value indicates that unexplained local variation is low compared with the total spatial variation."
+  },
+  {
+    "objectID": "week6/index.html#spherical-component",
+    "href": "week6/index.html#spherical-component",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Spherical Component",
+    "text": "Spherical Component\nThe spherical component has:\n\\[\nC_1=0.5898\n\\]\nand range:\n\\[\na=942.5\n\\]\nThe partial sill represents the amount of variation explained by spatial autocorrelation.\nThe range indicates the maximum distance over which observations are spatially correlated.\nTherefore:\n\\[\nh &lt; 942.5\n\\]\nindicates spatial dependence, while:\n\\[\nh &gt; 942.5\n\\]\nindicates that observations are approximately spatially independent."
+  },
+  {
+    "objectID": "week6/index.html#total-sill",
+    "href": "week6/index.html#total-sill",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Total Sill",
+    "text": "Total Sill\nThe total sill is the sum of the nugget and partial sill:\n\\[\n\\text{Sill}=C_0+C_1\n\\]\nSubstituting the fitted values:\n\\[\n\\text{Sill}=0.0616+0.5898\n\\]\n\\[\n\\text{Sill}=0.6514\n\\]\nTherefore, the variogram stabilizes at approximately:\n\\[\n\\gamma(h)=0.6514\n\\]"
+  },
+  {
+    "objectID": "week6/index.html#strength-of-spatial-dependence",
+    "href": "week6/index.html#strength-of-spatial-dependence",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Strength of Spatial Dependence",
+    "text": "Strength of Spatial Dependence\nThe proportion of variance explained by spatial dependence can be calculated as:\n\\[\n\\text{Spatial dependence ratio}\n=\n\\frac{C_1}{C_0+C_1}\n\\]\nUsing the fitted values:\n\\[\n=\n\\frac{0.5898}{0.0616+0.5898}\n\\]\n\\[\n=0.906\n\\]\nor approximately:\n\\[\n90.6\\%\n\\]\nThis indicates strong spatial dependence."
+  },
+  {
+    "objectID": "week6/index.html#overall-interpretation",
+    "href": "week6/index.html#overall-interpretation",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Overall Interpretation",
+    "text": "Overall Interpretation\nThe fitted nugget-spherical model indicates that:\n\nThe nugget variance is small (\\(0.0616\\)), suggesting limited measurement error and microscale variation.\nMost of the variability is explained by spatial structure (\\(0.5898\\)).\nLog zinc concentrations are spatially correlated up to approximately 942.5 m.\nLocations closer than 942.5 m tend to have similar zinc concentrations.\nLocations separated by larger distances are approximately independent.\n\nA summary statement is:\n\nThe omnidirectional variogram was fitted using a nugget-spherical model. The fitted model had a nugget variance of 0.0616, a partial sill of 0.5898, and a spatial range of 942.5 m. Approximately 90.6% of the total variance was explained by spatial dependence, indicating strong spatial autocorrelation in log zinc concentrations."
+  },
+  {
+    "objectID": "week6/index.html#why-omnidirectional-variogram-can-be-misleading",
+    "href": "week6/index.html#why-omnidirectional-variogram-can-be-misleading",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Why Omnidirectional Variogram Can Be Misleading",
+    "text": "Why Omnidirectional Variogram Can Be Misleading\nWhen all directions are combined:\n\nStrong spatial dependence in one direction is averaged with weaker dependence in another direction.\nThe estimated range may represent an average range rather than the true directional ranges.\nDirectional patterns and anisotropy may be hidden.\n\nFor example:\nSuppose the true ranges are:\n\n\n\nDirection\nRange\n\n\n\n\nNorth-east to South-west\n1500 m\n\n\nEast-west\n500 m\n\n\n\nAn omnidirectional variogram may show an intermediate range, which does not represent either direction accurately."
+  },
+  {
+    "objectID": "week6/index.html#detecting-anisotropy-1",
+    "href": "week6/index.html#detecting-anisotropy-1",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Detecting Anisotropy",
+    "text": "Detecting Anisotropy\nWhen anisotropy is suspected, use:\n\nDirectional variograms\n\nThe variogram is calculated separately for different directions:\n\\[\n\\gamma(h,\\theta)\n\\]\nExample directions:\n\n\\(0^\\circ\\)\n\\(45^\\circ\\)\n\\(90^\\circ\\)\n\\(135^\\circ\\)\n\n\nvg_directional &lt;- variogram(\n  log(zinc) ~ 1,\n  meuse_sf,\n  alpha = c(0,45,90,135),\n  cutoff = 2000,\n  width = 100\n)\n\nplot(vg_directional)\n\n\n\n\n\n\n\n\n\n\nVariogram map\n\nA variogram map considers distance and direction jointly.\nThe separation vector is:\n\\[\nh=(x,y)\n\\]\nand the semivariance contribution:\n\\[\n\\frac{1}{2}(Z(s)-Z(s+h))^2\n\\]\nis assigned to the corresponding lag cell.\nAn elongated pattern in the variogram map indicates directional dependence."
+  },
+  {
+    "objectID": "week6/index.html#distinguishing-between-isotropy-and-anisotropy",
+    "href": "week6/index.html#distinguishing-between-isotropy-and-anisotropy",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Distinguishing Between Isotropy and Anisotropy",
+    "text": "Distinguishing Between Isotropy and Anisotropy\nThe procedure for distinguishing between isotropy and anisotropy is based on comparing variogram models calculated in different directions.\nFirst, directional variograms are calculated for several spatial directions. A variogram model is then fitted separately to each directional variogram.\nThe fitted models are compared based on their:\n\nnugget (\\(C_0\\)),\nsill (\\(C_0+C_1\\)),\nrange (\\(a\\)).\n\nIf the fitted variogram parameters are approximately the same in all directions, the spatial process is considered isotropic.\nMathematically:\n\\[\n\\gamma(h,\\theta)=\\gamma(h)\n\\]\nwhere the semivariance depends only on distance \\(h\\) and not on direction \\(\\theta\\).\nIf the variogram parameters differ among directions, the process is considered anisotropic:\n\\[\n\\gamma(h,\\theta)\\neq\\gamma(h)\n\\]\nwhere the spatial dependence changes with direction."
+  },
+  {
+    "objectID": "week6/index.html#types-of-anisotropy",
+    "href": "week6/index.html#types-of-anisotropy",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Types of Anisotropy",
+    "text": "Types of Anisotropy\nAnisotropy can be classified into three main categories:\n\nGeometric anisotropy\nZonal anisotropy\nMixed anisotropy"
+  },
+  {
+    "objectID": "week6/index.html#geometric-anisotropy",
+    "href": "week6/index.html#geometric-anisotropy",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "1. Geometric Anisotropy",
+    "text": "1. Geometric Anisotropy\nIn geometric anisotropy, the sill remains constant across directions, but the range changes with direction.\nThe variogram reaches the same sill:\n\\[\nC_0+C_1=\\text{constant}\n\\]\nbut the range varies:\n\\[\na(\\theta_1)\\neq a(\\theta_2)\n\\]\nThis means that the distance over which spatial correlation exists differs depending on the direction.\nFor example:\n\nAlong one direction, spatial dependence may extend up to 1500 m.\nAlong another direction, spatial dependence may disappear after 500 m.\n\nWhen sample pairs have the same separation distance but different directions:\n\nthe sill remains the same,\nthe range changes.\n\nGeometric anisotropy is often handled by rescaling distances along different directions."
+  },
+  {
+    "objectID": "week6/index.html#zonal-anisotropy",
+    "href": "week6/index.html#zonal-anisotropy",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "2. Zonal Anisotropy",
+    "text": "2. Zonal Anisotropy\nIn zonal anisotropy, both the sill and range vary with distance and direction.\nThe variogram parameters satisfy:\n\\[\nC_0+C_1(\\theta_1)\\neq C_0+C_1(\\theta_2)\n\\]\nand:\n\\[\na(\\theta_1)\\neq a(\\theta_2)\n\\]\nTherefore, observations separated by the same distance can have different levels of spatial variability depending on direction.\nA zonal anisotropic model usually consists of two or more directional variogram structures:\n\\[\n\\gamma(h)=\n\\gamma_1(h)+\\gamma_2(h)+...+\\gamma_n(h)\n\\]\nZonal anisotropy is less common in natural processes because it requires different spatial structures operating in different directions."
+  },
+  {
+    "objectID": "week6/index.html#mixed-anisotropy",
+    "href": "week6/index.html#mixed-anisotropy",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "3. Mixed Anisotropy",
+    "text": "3. Mixed Anisotropy\nMixed anisotropy occurs when both the sill and range vary with direction.\nTherefore:\n\\[\nC_0+C_1(\\theta)\n\\]\nand:\n\\[\na(\\theta)\n\\]\nchange with direction.\nThis type of anisotropy is commonly observed in natural phenomena.\nExamples include:\n\ngeological formations,\nsoil properties,\nenvironmental processes.\n\nFor example, geological structures often have:\n\na larger spatial range in the horizontal direction,\na smaller spatial range in the vertical direction.\n\nThis occurs because geological layers usually extend farther horizontally than vertically."
+  },
+  {
+    "objectID": "week6/index.html#summary-of-anisotropy-types",
+    "href": "week6/index.html#summary-of-anisotropy-types",
+    "title": "Introduction to Kriging and Spatial Interpolation Using R",
+    "section": "Summary of Anisotropy Types",
+    "text": "Summary of Anisotropy Types\n\n\n\nType\nSill changes with direction?\nRange changes with direction?\n\n\n\n\nIsotropy\nNo\nNo\n\n\nGeometric anisotropy\nNo\nYes\n\n\nZonal anisotropy\nYes\nYes\n\n\nMixed anisotropy\nYes\nYes\n\n\n\nIn practice, directional variograms and variogram maps are used to identify these anisotropic structures before fitting a final spatial model."
   }
 ]
