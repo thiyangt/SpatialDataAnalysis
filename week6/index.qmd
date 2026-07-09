@@ -1,6 +1,7 @@
 ---
 title: "Introduction to Kriging and Spatial Interpolation Using R"
 toc: true
+editor: source
 ---
 
 # Concept of Kriging
@@ -8,8 +9,6 @@ toc: true
 **Kriging** is a geostatistical interpolation method that predicts the value of a variable at an unobserved location using a weighted average of nearby observed values. Unlike deterministic interpolation methods such as inverse distance weighting (IDW), kriging explicitly incorporates the spatial correlation among observations through a variogram model.
 
 The underlying assumption of kriging is that observations located closer together tend to be more similar than those farther apart. This spatial dependence is quantified using the variogram, which describes how similarity decreases with increasing distance.
-
-
 
 Suppose observations are available at $n$ locations, $\mathbf{s}_1, \mathbf{s}_2, \ldots, \mathbf{s}_n$. The predicted value at an unsampled location $\mathbf{s}_0$ is given by
 
@@ -19,9 +18,9 @@ $$
 
 where
 
-- $\hat{Z}(\mathbf{s}_0)$ is the predicted value at location $\mathbf{s}_0$.
-- $Z(\mathbf{s}_i)$ is the observed value at location $\mathbf{s}_i$.
-- $\lambda_i$ is the weight assigned to the $i$th observation.
+-   $\hat{Z}(\mathbf{s}_0)$ is the predicted value at location $\mathbf{s}_0$.
+-   $Z(\mathbf{s}_i)$ is the observed value at location $\mathbf{s}_i$.
+-   $\lambda_i$ is the weight assigned to the $i$th observation.
 
 Unlike deterministic interpolation methods, the kriging weights are **not** determined solely by distance. Instead, they are computed using the spatial covariance (or variogram), so that observations with stronger spatial correlation have greater influence on the prediction.
 
@@ -29,8 +28,8 @@ Unlike deterministic interpolation methods, the kriging weights are **not** dete
 
 The fundamental idea behind kriging is that a spatial variable can be decomposed into two components:
 
-1. A **deterministic trend**, which describes the large-scale variation in the data.
-2. A **random error (residual)**, which captures the small-scale spatial variation.
+1.  A **deterministic trend**, which describes the large-scale variation in the data.
+2.  A **random error (residual)**, which captures the small-scale spatial variation.
 
 Mathematically, the spatial process can be expressed as
 
@@ -40,9 +39,9 @@ $$
 
 where
 
-- $Z(\mathbf{s})$ is the observed value at location $\mathbf{s}$,
-- $m(\mathbf{s})$ is the deterministic trend (or mean structure),
-- $\varepsilon(\mathbf{s})$ is the spatially correlated random error.
+-   $Z(\mathbf{s})$ is the observed value at location $\mathbf{s}$,
+-   $m(\mathbf{s})$ is the deterministic trend (or mean structure),
+-   $\varepsilon(\mathbf{s})$ is the spatially correlated random error.
 
 The trend represents systematic variation that can often be explained by location or other explanatory variables. The residual component represents the remaining variation after the trend has been removed.
 
@@ -72,24 +71,20 @@ $$
 
 where
 
-- $\hat{m}(\mathbf{s}_0)$ is the estimated trend at the prediction location,
-- $\hat{\varepsilon}(\mathbf{s}_0)$ is the kriged residual obtained using the fitted variogram.
+-   $\hat{m}(\mathbf{s}_0)$ is the estimated trend at the prediction location,
+-   $\hat{\varepsilon}(\mathbf{s}_0)$ is the kriged residual obtained using the fitted variogram.
 
 This decomposition forms the conceptual foundation of geostatistical interpolation and distinguishes kriging from deterministic interpolation methods such as inverse distance weighting (IDW), which do not explicitly model spatial dependence.
-
-
 
 ## Properties of Kriging
 
 Kriging estimates have the following desirable properties:
 
-- **Linear:** Predictions are weighted sums of observed values.
-- **Unbiased:** The expected prediction equals the true value.
-- **Best (Minimum Variance):** Among all linear unbiased estimators, kriging minimizes the prediction variance.
+-   **Linear:** Predictions are weighted sums of observed values.
+-   **Unbiased:** The expected prediction equals the true value.
+-   **Best (Minimum Variance):** Among all linear unbiased estimators, kriging minimizes the prediction variance.
 
 These properties are collectively referred to as the **Best Linear Unbiased Predictor (BLUP)**.
-
-
 
 # Kriging Variance
 
@@ -104,8 +99,8 @@ $$
 
 where
 
-- $\sigma_K^2$ is the kriging variance.
-- $\gamma(\mathbf{s}_i,\mathbf{s}_0)$ is the semivariance between the observed location $\mathbf{s}_i$ and the prediction location $\mathbf{s}_0$.
+-   $\sigma_K^2$ is the kriging variance.
+-   $\gamma(\mathbf{s}_i,\mathbf{s}_0)$ is the semivariance between the observed location $\mathbf{s}_i$ and the prediction location $\mathbf{s}_0$.
 
 The kriging variance depends on the spatial configuration of the data and the fitted variogram model. It does **not** depend on the observed values themselves.
 
@@ -113,12 +108,11 @@ The kriging variance depends on the spatial configuration of the data and the fi
 
 The most commonly used kriging methods are:
 
-- **Simple Kriging (SK):** Assumes the population mean is known and constant.
-- **Ordinary Kriging (OK):** Assumes an unknown but constant local mean.
-- **Universal Kriging (UK):** Assumes the mean varies spatially according to a deterministic trend.
-- **Regression Kriging (RK):** Combines regression with kriging of the residuals.
-- **Co-Kriging:** Uses one or more auxiliary variables that are spatially correlated with the primary variable.
-
+-   **Simple Kriging (SK):** Assumes the population mean is known and constant.
+-   **Ordinary Kriging (OK):** Assumes an unknown but constant local mean.
+-   **Universal Kriging (UK):** Assumes the mean varies spatially according to a deterministic trend.
+-   **Regression Kriging (RK):** Combines regression with kriging of the residuals.
+-   **Co-Kriging:** Uses one or more auxiliary variables that are spatially correlated with the primary variable.
 
 # Kriging Weights for Different Kriging Approaches
 
@@ -166,7 +160,7 @@ $$
 
 where $\eta$ is the Lagrange multiplier.
 
----
+------------------------------------------------------------------------
 
 ## Simple Kriging (SK)
 
@@ -186,8 +180,7 @@ The weights are obtained from:
 
 $\mathbf{C}\boldsymbol{\lambda}=\mathbf{c}_0$
 
-where $\mathbf{C}$ is the covariance matrix between observed locations and 
-$\mathbf{c}_0$ is the covariance vector between observations and the prediction location.
+where $\mathbf{C}$ is the covariance matrix between observed locations and $\mathbf{c}_0$ is the covariance vector between observations and the prediction location.
 
 In matrix form,
 
@@ -215,11 +208,11 @@ $$
 
 where:
 
-- $\mathbf{C}$ is the covariance matrix among the observed locations.
-- $\boldsymbol{\lambda}$ is the vector of kriging weights.
-- $\mathbf{c}_0$ is the covariance vector between observed locations and the prediction location $s_0$.
+-   $\mathbf{C}$ is the covariance matrix among the observed locations.
+-   $\boldsymbol{\lambda}$ is the vector of kriging weights.
+-   $\mathbf{c}_0$ is the covariance vector between observed locations and the prediction location $s_0$.
 
----
+------------------------------------------------------------------------
 
 ## Universal Kriging (UK)
 
@@ -245,7 +238,7 @@ $\sum_i\lambda_i x_i=x_0$
 
 $\sum_i\lambda_i y_i=y_0$
 
----
+------------------------------------------------------------------------
 
 ## Regression Kriging (RK)
 
@@ -263,12 +256,12 @@ The residual weights satisfy:
 
 $\sum_i\lambda_i=1$
 
----
+------------------------------------------------------------------------
 
 ## Summary of Weight Constraints
 
 | Method | Mean Assumption | Weight Constraint |
-|---|---|---|
+|------------------------|------------------------|------------------------|
 | Simple Kriging | Known constant mean | No constraint |
 | Ordinary Kriging | Unknown constant mean | $\sum_i\lambda_i=1$ |
 | Universal Kriging | Trend-based mean | $\sum_i\lambda_i f_k(s_i)=f_k(s_0)$ |
@@ -277,7 +270,6 @@ $\sum_i\lambda_i=1$
 Therefore, Ordinary Kriging requires the weights to sum to one, while Universal Kriging extends this condition to preserve the underlying trend structure.
 
 # Application with meuse data
-
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -360,10 +352,9 @@ ggplot() +
 
 Stationarity is a fundamental assumption in geostatistics because it allows observations from different locations to be combined to estimate spatial dependence. A spatial process is stationary when its statistical properties remain unchanged across space.
 
-A spatial process is **strictly stationary** if the joint probability distribution remains the same after shifting any set of locations. A less restrictive assumption is **weak stationarity** (second-order stationarity), which assumes that the mean and variance are constant and that the covariance between two observations depends only on their separation distance \(h\), rather than their actual locations.
+A spatial process is **strictly stationary** if the joint probability distribution remains the same after shifting any set of locations. A less restrictive assumption is **weak stationarity** (second-order stationarity), which assumes that the mean and variance are constant and that the covariance between two observations depends only on their separation distance (h), rather than their actual locations.
 
 For variogram analysis, **intrinsic stationarity** is particularly important. It assumes that the variance of differences between observations depends only on the separation distance:
-
 
 $$Var(Z(x+h)-Z(x)) = 2\gamma(h)$$
 
@@ -411,7 +402,6 @@ ggplot(meuse_df, aes(x = y, y = log_zinc)) +
   )
 ```
 
-
 ```{r}
 ggplot(meuse_df, aes(x = dist, y = log_zinc)) +
   geom_point() +
@@ -448,19 +438,19 @@ $$log(zinc) = \beta_0 + \beta_1\sqrt{distance} + \epsilon$$
 
 This is important because:
 
-1. Better estimation of the trend
+1.  Better estimation of the trend
 
-- A linear model provides a simple and interpretable estimate of the large-scale trend (mean variation) in zinc concentration.
+-   A linear model provides a simple and interpretable estimate of the large-scale trend (mean variation) in zinc concentration.
 
-- The spatial model can then focus on the remaining spatial dependence (the residuals).
+-   The spatial model can then focus on the remaining spatial dependence (the residuals).
 
-2. Satisfies assumptions of spatial modelling
+2.  Satisfies assumptions of spatial modelling
 
-- Many geostatistical methods assume that after removing a trend, the residuals are approximately stationary.
+-   Many geostatistical methods assume that after removing a trend, the residuals are approximately stationary.
 
-- If a strong nonlinear trend remains, the variogram may continue increasing with distance instead of reaching a stable sill.
+-   If a strong nonlinear trend remains, the variogram may continue increasing with distance instead of reaching a stable sill.
 
-3. Improves variogram interpretation
+3.  Improves variogram interpretation
 
 The variogram measures spatial dependence:
 
@@ -482,9 +472,9 @@ $Z(s) = m(s) + \varepsilon(s)$
 
 where:
 
-- $Z(s)$ is the observed value at location $s$.
-- $m(s)$ is the spatial trend (mean structure).
-- $\varepsilon(s)$ is the spatially correlated random component.
+-   $Z(s)$ is the observed value at location $s$.
+-   $m(s)$ is the spatial trend (mean structure).
+-   $\varepsilon(s)$ is the spatially correlated random component.
 
 For two locations separated by a distance vector $h$, the difference between observations is:
 
@@ -518,11 +508,11 @@ $\gamma_R(h)=\frac{1}{2}Var[R(s+h)-R(s)]$
 
 This ensures that the variogram measures true spatial dependence rather than the effect of an unmodelled spatial trend.
 
-4. Allows accurate prediction
+4.  Allows accurate prediction
 
-- Kriging methods assume that the mean structure is correctly specified.
+-   Kriging methods assume that the mean structure is correctly specified.
 
-- If the relationship between zinc concentration and distance is incorrectly modelled, predictions at unsampled locations will be biased.
+-   If the relationship between zinc concentration and distance is incorrectly modelled, predictions at unsampled locations will be biased.
 
 Therefore, transforming distance to make the relationship approximately linear is not just a statistical convenience; it helps separate the deterministic trend from the spatial random component, which is essential for reliable spatial prediction.
 
@@ -652,7 +642,7 @@ v3 <- ggplot(vg_trend, aes(dist, gamma)) +
 
 Spatial exploratory analysis is important before fitting a variogram model. Two useful tools for exploring spatial dependence are the **variogram cloud** and the **h-scatterplot**.
 
----
+------------------------------------------------------------------------
 
 ## Variogram Cloud
 
@@ -664,19 +654,19 @@ $$
 
 where:
 
-- $Z(s_i)$ and $Z(s_j)$ are observations at two spatial locations.
-- The distance between the locations is represented by $h$.
+-   $Z(s_i)$ and $Z(s_j)$ are observations at two spatial locations.
+-   The distance between the locations is represented by $h$.
 
 The variogram cloud plots:
 
-- **x-axis:** distance between locations ($h$)
-- **y-axis:** pairwise semivariance ($\gamma_{ij}$)
+-   **x-axis:** distance between locations ($h$)
+-   **y-axis:** pairwise semivariance ($\gamma_{ij}$)
 
 ### Interpretation
 
 A variogram cloud is useful for:
 
-1. **Detecting spatial autocorrelation**
+1.  **Detecting spatial autocorrelation**
 
 When nearby observations have similar values:
 
@@ -692,20 +682,19 @@ $$
 
 This indicates positive spatial autocorrelation.
 
-2. **Identifying outliers**
+2.  **Identifying outliers**
 
 Pairs with very large semivariance values may indicate:
 
-- measurement errors
-- extreme observations
-- unusual spatial patterns
+-   measurement errors
+-   extreme observations
+-   unusual spatial patterns
 
-3. **Detecting anisotropy**
+3.  **Detecting anisotropy**
 
 Variogram clouds can be examined in different directions to determine whether spatial dependence changes with direction.
 
-
----
+------------------------------------------------------------------------
 
 # h-Scatterplot
 
@@ -737,7 +726,7 @@ $$
 Cor(Z(s),Z(s+h)) \rightarrow 0
 $$
 
----
+------------------------------------------------------------------------
 
 ## Relationship between h-Scatterplot and Variogram
 
@@ -763,14 +752,12 @@ $$
 
 the differences increase, producing larger variogram values.
 
----
-
-
+------------------------------------------------------------------------
 
 ## Comparison of Variogram Cloud and h-Scatterplot
 
 | Method | Displays | Purpose |
-|---|---|---|
+|------------------------|------------------------|------------------------|
 | Variogram cloud | Distance vs pairwise semivariance | Explore spatial dependence, outliers, and anisotropy |
 | h-Scatterplot | $Z(s)$ vs $Z(s+h)$ | Visualise spatial correlation at a specific lag |
 | Empirical variogram | Average semivariance by distance class | Estimate a spatial correlation model |
@@ -792,10 +779,9 @@ gstat::hscat(
 )
 ```
 
-
 A lagged scatterplot of the log of zinc concentrations in top soil along the river Meuse is shown below. The correlation between pairs of points less than 100 m apart is 0.722. Up to a separation distance of approximately 400 to 500 m, there is still significant spatial correlation between zinc concentrations.
 
-# Variogram Cloud 
+# Variogram Cloud
 
 ```{r, echo=FALSE}
 # Variogram cloud
@@ -804,9 +790,6 @@ plot(meuse.vc, ylab = bquote(gamma), xlab = c('h (separation distance in m)'))
 ```
 
 That is, the majority of plots are similar even at higher distances. However, dissimilarity increases with distances up to about 500 m.
-
-
-
 
 ## Variogram Map for Assessing Directional Dependence (Anisotropy Variogram Map )
 
@@ -826,8 +809,8 @@ $$
 
 where:
 
-- $x$ represents the horizontal spatial separation.
-- $y$ represents the vertical spatial separation.
+-   $x$ represents the horizontal spatial separation.
+-   $y$ represents the vertical spatial separation.
 
 For each pair of observations, the semivariance contribution is calculated as:
 
@@ -837,27 +820,27 @@ $$
 
 This semivariance value is assigned to the grid cell corresponding to the separation vector $h$.
 
----
+------------------------------------------------------------------------
 
 ## Construction of a Variogram Map
 
 The steps are:
 
-1. Calculate all possible pairs of observations.
+1.  Calculate all possible pairs of observations.
 
-2. For each pair, calculate the separation vector:
+2.  For each pair, calculate the separation vector:
 
 $$
 h=(x_i-x_j,\ y_i-y_j)
 $$
 
-3. Calculate the pairwise semivariance:
+3.  Calculate the pairwise semivariance:
 
 $$
 \frac{1}{2}(Z(s_i)-Z(s_j))^2
 $$
 
-4. Assign the semivariance value to the corresponding location in the variogram map.
+4.  Assign the semivariance value to the corresponding location in the variogram map.
 
 The map is centred at:
 
@@ -867,7 +850,7 @@ $$
 
 because $h$ represents a **relative distance between locations**, not an actual geographical location.
 
----
+------------------------------------------------------------------------
 
 ## Symmetry of the Variogram Map
 
@@ -891,13 +874,13 @@ $$
 
 Therefore, opposite directions have identical semivariance values.
 
----
+------------------------------------------------------------------------
 
 ## Interpreting a Variogram Map
 
 The colour intensity represents the magnitude of semivariance.
 
-- Small semivariance:
+-   Small semivariance:
 
 $$
 \gamma(h) \approx 0
@@ -905,7 +888,7 @@ $$
 
 indicates that observations separated by distance $h$ are similar.
 
-- Large semivariance:
+-   Large semivariance:
 
 $$
 \gamma(h) \text{ is large}
@@ -915,7 +898,7 @@ indicates weaker spatial similarity.
 
 A threshold can be applied so that only grid cells containing a minimum number of point pairs are displayed. This avoids displaying unreliable estimates based on very few observations.
 
----
+------------------------------------------------------------------------
 
 ## Detecting Anisotropy
 
@@ -925,10 +908,10 @@ However, if the map is elongated in one direction, it indicates anisotropy.
 
 For example:
 
-- A longer range along the north-east to south-west direction indicates stronger spatial continuity in that direction.
-- A shorter range in other directions indicates weaker spatial dependence.
+-   A longer range along the north-east to south-west direction indicates stronger spatial continuity in that direction.
+-   A shorter range in other directions indicates weaker spatial dependence.
 
----
+------------------------------------------------------------------------
 
 ## Example: Meuse Zinc Data
 
@@ -950,7 +933,7 @@ remains stronger for locations separated along this direction.
 
 This indicates **anisotropic spatial autocorrelation**.
 
----
+------------------------------------------------------------------------
 
 ## R Code: Variogram Map
 
@@ -1019,7 +1002,7 @@ vg_map <- variogram(
 )
 ```
 
----
+------------------------------------------------------------------------
 
 ## 1. Cutoff
 
@@ -1041,8 +1024,8 @@ $$
 
 where:
 
-- $h$ is the separation vector between two locations.
-- $||h||$ is the distance between locations.
+-   $h$ is the separation vector between two locations.
+-   $||h||$ is the distance between locations.
 
 Pairs with distances greater than the cutoff value are ignored.
 
@@ -1064,7 +1047,7 @@ cutoff = 3000
 
 includes more distant pairs and helps identify the overall spatial dependence range.
 
----
+------------------------------------------------------------------------
 
 ## 2. Width
 
@@ -1081,16 +1064,16 @@ means that the separation distances are divided into intervals of 50 distance un
 The lag distance classes are:
 
 | Distance range | Lag cell |
-|---|---|
-| 0–50 | 1 |
-| 50–100 | 2 |
-| 100–150 | 3 |
-| ... | ... |
-| 1450–1500 | 30 |
+|----------------|----------|
+| 0–50           | 1        |
+| 50–100         | 2        |
+| 100–150        | 3        |
+| ...            | ...      |
+| 1450–1500      | 30       |
 
 Each cell contains all pairs of observations whose separation vector $h=(x,y)$ falls within that region.
 
----
+------------------------------------------------------------------------
 
 ## Relationship Between Cutoff and Width
 
@@ -1110,7 +1093,7 @@ $$
 
 Therefore, the variogram map contains approximately 30 distance classes in each direction around the origin.
 
----
+------------------------------------------------------------------------
 
 ## Interpretation of the Variogram Map
 
@@ -1138,10 +1121,10 @@ and assigned to the grid cell corresponding to the separation vector $h$.
 
 The colour intensity in each cell represents the magnitude of the average semivariance.
 
-- Small values of $\gamma(h)$ indicate similar observations and stronger spatial autocorrelation.
-- Large values of $\gamma(h)$ indicate dissimilar observations and weaker spatial dependence.
+-   Small values of $\gamma(h)$ indicate similar observations and stronger spatial autocorrelation.
+-   Large values of $\gamma(h)$ indicate dissimilar observations and weaker spatial dependence.
 
----
+------------------------------------------------------------------------
 
 # Choosing Cutoff and Width Values
 
@@ -1196,10 +1179,10 @@ $$
 
 where:
 
-- $Z(s_i)$ is the value at location $s_i$.
-- $Z(s_i+h)$ is the value at a location separated by lag vector $h$.
+-   $Z(s_i)$ is the value at location $s_i$.
+-   $Z(s_i+h)$ is the value at a location separated by lag vector $h$.
 
----
+------------------------------------------------------------------------
 
 ## Aggregating Values Within a Grid Cell
 
@@ -1214,24 +1197,24 @@ $$
 
 where:
 
-- $N_h$ is the number of point pairs falling within the grid cell.
-- $\gamma(h)$ is the value plotted in the heat map.
+-   $N_h$ is the number of point pairs falling within the grid cell.
+-   $\gamma(h)$ is the value plotted in the heat map.
 
 Therefore, the colour of each cell represents the **mean semivariance**, not individual pairwise semivariances.
 
----
+------------------------------------------------------------------------
 
 ## Example
 
 Assume a grid cell contains five pairs of observations. The calculated semivariances are:
 
 | Pair | Semivariance |
-|---|---:|
-| 1 | 2.1 |
-| 2 | 3.0 |
-| 3 | 2.5 |
-| 4 | 4.0 |
-| 5 | 3.4 |
+|------|-------------:|
+| 1    |          2.1 |
+| 2    |          3.0 |
+| 3    |          2.5 |
+| 4    |          4.0 |
+| 5    |          3.4 |
 
 The value displayed in the heat map cell is:
 
@@ -1246,7 +1229,7 @@ $$
 
 Thus, the heat map colour corresponds to a semivariance value of $3.0$.
 
----
+------------------------------------------------------------------------
 
 ## Minimum Number of Pairs
 
@@ -1260,19 +1243,19 @@ plot(vg_map, threshold = 4)
 
 means that only cells containing at least 4 observation pairs are displayed.
 
----
+------------------------------------------------------------------------
 
 ## Interpretation
 
 The variogram map shows the spatial pattern of average semivariance:
 
-- Low values of $\gamma(h)$ indicate that locations separated by vector $h$ have similar values.
-  
+-   Low values of $\gamma(h)$ indicate that locations separated by vector $h$ have similar values.
+
 $$
 Z(s_i) \approx Z(s_i+h)
 $$
 
-- High values of $\gamma(h)$ indicate that locations separated by vector $h$ have different values.
+-   High values of $\gamma(h)$ indicate that locations separated by vector $h$ have different values.
 
 $$
 |Z(s_i)-Z(s_i+h)| \text{ is large}
@@ -1305,7 +1288,7 @@ is a function of distance only.
 
 The direction of the separation vector is ignored, and all pairs of observations with approximately the same distance are grouped together.
 
----
+------------------------------------------------------------------------
 
 ## Calculation of Omnidirectional Variogram
 
@@ -1341,10 +1324,10 @@ $$
 
 where:
 
-- $N(h)$ is the number of point pairs separated by distance $h$.
-- $\hat{\gamma}(h)$ is the average semivariance at distance $h$.
+-   $N(h)$ is the number of point pairs separated by distance $h$.
+-   $\hat{\gamma}(h)$ is the average semivariance at distance $h$.
 
----
+------------------------------------------------------------------------
 
 ## Interpretation
 
@@ -1368,7 +1351,7 @@ $$
 
 because observations become less similar.
 
----
+------------------------------------------------------------------------
 
 ### Spatial independence
 
@@ -1382,7 +1365,7 @@ remains approximately constant for all distances.
 
 The variogram reaches a **sill** quickly.
 
----
+------------------------------------------------------------------------
 
 ### Trend effect
 
@@ -1400,7 +1383,7 @@ $$
 
 rather than spatial dependence.
 
----
+------------------------------------------------------------------------
 
 ## R Example: Omnidirectional Variogram
 
@@ -1435,8 +1418,7 @@ plot(
 )
 ```
 
-The `width` parameter defines the lag distance interval (bin size) used to group pairs of observations based on their separation
-distance.
+The `width` parameter defines the lag distance interval (bin size) used to group pairs of observations based on their separation distance.
 
 ## Width Parameter in an Omnidirectional Variogram
 
@@ -1453,7 +1435,7 @@ vg <- variogram(
 )
 ```
 
----
+------------------------------------------------------------------------
 
 ## Meaning of Width
 
@@ -1470,17 +1452,17 @@ the separation distances are divided into intervals of 100 distance units.
 The lag classes are approximately:
 
 | Lag class | Distance range |
-|---|---|
-| 1 | 0--100 |
-| 2 | 100--200 |
-| 3 | 200--300 |
-| 4 | 300--400 |
-| ... | ... |
-| 15 | 1400--1500 |
+|-----------|----------------|
+| 1         | 0--100         |
+| 2         | 100--200       |
+| 3         | 200--300       |
+| 4         | 300--400       |
+| ...       | ...            |
+| 15        | 1400--1500     |
 
 For each distance class, all point pairs within that interval are used to estimate the average semivariance.
 
----
+------------------------------------------------------------------------
 
 ## Semivariance Calculation
 
@@ -1511,10 +1493,10 @@ $$
 
 where:
 
-- $N(h)$ is the number of pairs within the lag distance interval.
-- $\hat{\gamma}(h)$ is the average semivariance plotted on the variogram.
+-   $N(h)$ is the number of pairs within the lag distance interval.
+-   $\hat{\gamma}(h)$ is the average semivariance plotted on the variogram.
 
----
+------------------------------------------------------------------------
 
 ## Relationship Between Cutoff and Width
 
@@ -1534,7 +1516,7 @@ $$
 
 Therefore, the variogram contains approximately 15 distance classes.
 
----
+------------------------------------------------------------------------
 
 ## Effect of Changing Width
 
@@ -1552,15 +1534,15 @@ $$
 
 Advantages:
 
-- Provides a more detailed variogram.
-- Can detect short-range spatial patterns.
+-   Provides a more detailed variogram.
+-   Can detect short-range spatial patterns.
 
 Disadvantages:
 
-- Fewer point pairs per class.
-- Variogram estimates may become noisy.
+-   Fewer point pairs per class.
+-   Variogram estimates may become noisy.
 
----
+------------------------------------------------------------------------
 
 ### Larger Width
 
@@ -1576,14 +1558,14 @@ $$
 
 Advantages:
 
-- More point pairs in each class.
-- Produces a smoother variogram.
+-   More point pairs in each class.
+-   Produces a smoother variogram.
 
 Disadvantages:
 
-- Reduces spatial resolution.
+-   Reduces spatial resolution.
 
----
+------------------------------------------------------------------------
 
 ## Interpretation
 
@@ -1600,10 +1582,10 @@ width = 100
 
 means:
 
-1. Consider all observation pairs separated by less than 1500 m.
-2. Divide distances into 100 m intervals.
-3. Calculate the average semivariance within each interval.
-4. Plot these averages to obtain the empirical omnidirectional variogram.
+1.  Consider all observation pairs separated by less than 1500 m.
+2.  Divide distances into 100 m intervals.
+3.  Calculate the average semivariance within each interval.
+4.  Plot these averages to obtain the empirical omnidirectional variogram.
 
 ```{r}
 # Calculate omnidirectional variogram
@@ -1625,12 +1607,12 @@ plot(
 
 We will use width=100.
 
----
+------------------------------------------------------------------------
 
 ## Omnidirectional vs Directional Variogram
 
 | Variogram type | Direction considered? | Purpose |
-|---|---|---|
+|------------------------|------------------------|------------------------|
 | Omnidirectional variogram | No | Overall spatial dependence |
 | Directional variogram | Yes | Detect anisotropy |
 | Variogram map | Distance and direction jointly | Visualise directional dependence |
@@ -1653,12 +1635,12 @@ $$
 
 where:
 
-- $N(h)$ is the number of observation pairs separated by distance $h$.
-- $\hat{\gamma}(h)$ is the estimated semivariance.
+-   $N(h)$ is the number of observation pairs separated by distance $h$.
+-   $\hat{\gamma}(h)$ is the estimated semivariance.
 
 A theoretical variogram model is then fitted to the empirical variogram.
 
----
+------------------------------------------------------------------------
 
 ## Load Data and Convert to sf Object
 
@@ -1677,7 +1659,7 @@ meuse_sf <- st_as_sf(
 )
 ```
 
----
+------------------------------------------------------------------------
 
 ## Calculate Omnidirectional Empirical Variogram
 
@@ -1698,15 +1680,15 @@ plot(
 )
 ```
 
----
+------------------------------------------------------------------------
 
 ## Define Initial Variogram Model
 
 A variogram model consists of:
 
-- **Nugget** ($C_0$): variation at very small distances.
-- **Partial sill** ($C_1$): spatially correlated variation.
-- **Range** ($a$): distance where spatial correlation disappears.
+-   **Nugget** ($C_0$): variation at very small distances.
+-   **Partial sill** ($C_1$): spatially correlated variation.
+-   **Range** ($a$): distance where spatial correlation disappears.
 
 The general form is:
 
@@ -1716,9 +1698,9 @@ $$
 
 where:
 
-- $C_0$ = nugget variance.
-- $C_0+C_1$ = sill.
-- $a$ = range.
+-   $C_0$ = nugget variance.
+-   $C_0+C_1$ = sill.
+-   $a$ = range.
 
 For example, a spherical model:
 
@@ -1750,7 +1732,7 @@ $$
 h\geq a
 $$
 
----
+------------------------------------------------------------------------
 
 ## Fit Spherical Variogram Model
 
@@ -1772,7 +1754,7 @@ vg_fit <- fit.variogram(
 vg_fit
 ```
 
----
+------------------------------------------------------------------------
 
 ## Plot Fitted Variogram
 
@@ -1786,18 +1768,18 @@ plot(
 )
 ```
 
----
+------------------------------------------------------------------------
 
 ## Interpretation of the Fitted Model
 
 The fitted variogram provides estimates of:
 
-| Parameter | Meaning |
-|---|---|
-| Nugget ($C_0$) | Measurement error or microscale variation |
-| Partial sill ($C_1$) | Spatially correlated variation |
-| Sill ($C_0+C_1$) | Total variance after reaching stability |
-| Range ($a$) | Maximum distance of spatial dependence |
+| Parameter            | Meaning                                   |
+|----------------------|-------------------------------------------|
+| Nugget ($C_0$)       | Measurement error or microscale variation |
+| Partial sill ($C_1$) | Spatially correlated variation            |
+| Sill ($C_0+C_1$)     | Total variance after reaching stability   |
+| Range ($a$)          | Maximum distance of spatial dependence    |
 
 If the variogram reaches a sill at distance $a$, observations separated by distances greater than $a$ are approximately spatially independent.
 
@@ -1806,9 +1788,9 @@ If the variogram reaches a sill at distance $a$, observations separated by dista
 The fitted variogram model is:
 
 | Model | Partial sill ($psill$) | Range |
-|---|---:|---:|
-| Nug | 0.0616 | 0 |
-| Sph | 0.5898 | 942.5 |
+|-------|-----------------------:|------:|
+| Nug   |                 0.0616 |     0 |
+| Sph   |                 0.5898 | 942.5 |
 
 The fitted model is a **nugget + spherical variogram model**:
 
@@ -1818,11 +1800,11 @@ $$
 
 where:
 
-- $C_0$ is the nugget variance.
-- $C_1$ is the partial sill representing spatially correlated variation.
-- $a$ is the range parameter.
+-   $C_0$ is the nugget variance.
+-   $C_1$ is the partial sill representing spatially correlated variation.
+-   $a$ is the range parameter.
 
----
+------------------------------------------------------------------------
 
 ## Nugget Effect
 
@@ -1834,13 +1816,13 @@ $$
 
 The nugget represents variation that occurs at very small spatial distances. It includes:
 
-- measurement errors,
-- microscale variation,
-- spatial variation occurring at distances smaller than the sampling interval.
+-   measurement errors,
+-   microscale variation,
+-   spatial variation occurring at distances smaller than the sampling interval.
 
 The relatively small nugget value indicates that unexplained local variation is low compared with the total spatial variation.
 
----
+------------------------------------------------------------------------
 
 ## Spherical Component
 
@@ -1874,7 +1856,7 @@ $$
 
 indicates that observations are approximately spatially independent.
 
----
+------------------------------------------------------------------------
 
 ## Total Sill
 
@@ -1900,7 +1882,7 @@ $$
 \gamma(h)=0.6514
 $$
 
----
+------------------------------------------------------------------------
 
 ## Strength of Spatial Dependence
 
@@ -1931,17 +1913,17 @@ $$
 
 This indicates strong spatial dependence.
 
----
+------------------------------------------------------------------------
 
 ## Overall Interpretation
 
 The fitted nugget-spherical model indicates that:
 
-- The nugget variance is small ($0.0616$), suggesting limited measurement error and microscale variation.
-- Most of the variability is explained by spatial structure ($0.5898$).
-- Log zinc concentrations are spatially correlated up to approximately **942.5 m**.
-- Locations closer than 942.5 m tend to have similar zinc concentrations.
-- Locations separated by larger distances are approximately independent.
+-   The nugget variance is small ($0.0616$), suggesting limited measurement error and microscale variation.
+-   Most of the variability is explained by spatial structure ($0.5898$).
+-   Log zinc concentrations are spatially correlated up to approximately **942.5 m**.
+-   Locations closer than 942.5 m tend to have similar zinc concentrations.
+-   Locations separated by larger distances are approximately independent.
 
 A summary statement is:
 
@@ -1951,28 +1933,28 @@ A summary statement is:
 
 When all directions are combined:
 
-- Strong spatial dependence in one direction is averaged with weaker dependence in another direction.
-- The estimated range may represent an average range rather than the true directional ranges.
-- Directional patterns and anisotropy may be hidden.
+-   Strong spatial dependence in one direction is averaged with weaker dependence in another direction.
+-   The estimated range may represent an average range rather than the true directional ranges.
+-   Directional patterns and anisotropy may be hidden.
 
 For example:
 
 Suppose the true ranges are:
 
-| Direction | Range |
-|---|---:|
+| Direction                |  Range |
+|--------------------------|-------:|
 | North-east to South-west | 1500 m |
-| East-west | 500 m |
+| East-west                |  500 m |
 
 An omnidirectional variogram may show an intermediate range, which does not represent either direction accurately.
 
----
+------------------------------------------------------------------------
 
 ## Detecting Anisotropy
 
 When anisotropy is suspected, use:
 
-1. **Directional variograms**
+1.  **Directional variograms**
 
 The variogram is calculated separately for different directions:
 
@@ -1982,10 +1964,10 @@ $$
 
 Example directions:
 
-- $0^\circ$
-- $45^\circ$
-- $90^\circ$
-- $135^\circ$
+-   $0^\circ$
+-   $45^\circ$
+-   $90^\circ$
+-   $135^\circ$
 
 ```{r}
 vg_directional <- variogram(
@@ -1999,9 +1981,9 @@ vg_directional <- variogram(
 plot(vg_directional)
 ```
 
----
+------------------------------------------------------------------------
 
-2. **Variogram map**
+2.  **Variogram map**
 
 A variogram map considers distance and direction jointly.
 
@@ -2021,7 +2003,7 @@ is assigned to the corresponding lag cell.
 
 An elongated pattern in the variogram map indicates directional dependence.
 
----
+------------------------------------------------------------------------
 
 ## Summary
 
@@ -2049,9 +2031,9 @@ First, directional variograms are calculated for several spatial directions. A v
 
 The fitted models are compared based on their:
 
-- nugget ($C_0$),
-- sill ($C_0+C_1$),
-- range ($a$).
+-   nugget ($C_0$),
+-   sill ($C_0+C_1$),
+-   range ($a$).
 
 If the fitted variogram parameters are approximately the same in all directions, the spatial process is considered **isotropic**.
 
@@ -2071,17 +2053,17 @@ $$
 
 where the spatial dependence changes with direction.
 
----
+------------------------------------------------------------------------
 
 ## Types of Anisotropy
 
 Anisotropy can be classified into three main categories:
 
-1. Geometric anisotropy
-2. Zonal anisotropy
-3. Mixed anisotropy
+1.  Geometric anisotropy
+2.  Zonal anisotropy
+3.  Mixed anisotropy
 
----
+------------------------------------------------------------------------
 
 ## 1. Geometric Anisotropy
 
@@ -2103,17 +2085,17 @@ This means that the distance over which spatial correlation exists differs depen
 
 For example:
 
-- Along one direction, spatial dependence may extend up to 1500 m.
-- Along another direction, spatial dependence may disappear after 500 m.
+-   Along one direction, spatial dependence may extend up to 1500 m.
+-   Along another direction, spatial dependence may disappear after 500 m.
 
 When sample pairs have the same separation distance but different directions:
 
-- the sill remains the same,
-- the range changes.
+-   the sill remains the same,
+-   the range changes.
 
 Geometric anisotropy is often handled by rescaling distances along different directions.
 
----
+------------------------------------------------------------------------
 
 ## 2. Zonal Anisotropy
 
@@ -2142,7 +2124,7 @@ $$
 
 Zonal anisotropy is less common in natural processes because it requires different spatial structures operating in different directions.
 
----
+------------------------------------------------------------------------
 
 ## 3. Mixed Anisotropy
 
@@ -2166,23 +2148,23 @@ This type of anisotropy is commonly observed in natural phenomena.
 
 Examples include:
 
-- geological formations,
-- soil properties,
-- environmental processes.
+-   geological formations,
+-   soil properties,
+-   environmental processes.
 
 For example, geological structures often have:
 
-- a larger spatial range in the horizontal direction,
-- a smaller spatial range in the vertical direction.
+-   a larger spatial range in the horizontal direction,
+-   a smaller spatial range in the vertical direction.
 
 This occurs because geological layers usually extend farther horizontally than vertically.
 
----
+------------------------------------------------------------------------
 
 ## Summary of Anisotropy Types
 
 | Type | Sill changes with direction? | Range changes with direction? |
-|---|---|---|
+|----|----|----|
 | Isotropy | No | No |
 | Geometric anisotropy | No | Yes |
 | Zonal anisotropy | Yes | Yes |
@@ -2194,10 +2176,78 @@ In practice, directional variograms and variogram maps are used to identify thes
 
 There is clear evidence of anisotropy in the variograms, with the highest level of spatial correlation shown in the 45 degree variogram. The $45^\circ$ variogram shows the strongest spatial continuity, as it reaches the sill at the greatest distance, indicating a longer range of spatial dependence.
 
-When the sill appears to be different in different directions, this suggests a trend in the data. There are a few ways to address this: 
+When the sill appears to be different in different directions, this suggests a trend in the data. There are a few ways to address this:
 
 (1) fit a nested semivariogram model with an infinite range in one direction
 
-(2) fit a semivariogram along one direction with no trend 
+(2) fit a semivariogram along one direction with no trend
 
 (3) fit a trend to the data, and then fit a semivariogram with a sill to the residuals
+
+# Meuse dataset handling
+
+There is clear evidence of **anisotropy** in the variograms. Anisotropy means that spatial correlation depends on direction. In other words, observations separated by the same distance may be more similar in one direction than in another.
+
+If directional variograms (e.g., 0°, 45°, 90°, and 135°) have different shapes or reach the sill at different distances, the spatial process is anisotropic rather than isotropic.
+
+The highest level of spatial correlation is shown in the **45° variogram**. A variogram with the highest spatial correlation typically has:
+
+-   the slowest increase in semivariance with distance,
+-   the largest range, meaning observations remain similar over longer distances, or
+-   reaches the sill at the greatest distance.
+
+This indicates that observations along the **45° direction remain correlated over larger distances** than in other directions. Therefore, the **45° direction exhibits the greatest spatial continuity**.
+
+When the **sill appears to be different in different directions**, this suggests the presence of a **trend** in the data. Under second-order stationarity, the variance is constant throughout the study region. Consequently, directional variograms should eventually level off at the same sill, even if their ranges differ because of geometric anisotropy.
+
+However, if the sills differ substantially between directions, this often indicates that the assumption of stationarity has been violated. One common reason is the presence of a **spatial trend (drift)**.
+
+For example, suppose zinc concentration gradually increases from southwest to northeast. Then:
+
+-   observations that are far apart in the direction of the trend will differ greatly,
+-   semivariance will continue increasing with distance, and
+-   the variogram may reach a much higher sill or may not level off at all.
+
+Thus, differences at large distances are caused not only by spatial dependence but also by the underlying trend.
+
+There are several ways to address this:
+
+1.  **Fit a nested semivariogram model with an infinite range in one direction.**
+
+    This approach models the trend as an additional component with an extremely large (effectively infinite) range. The infinite-range structure captures the large-scale variation (trend), while the finite-range structure models the local spatial correlation. This separates broad-scale and local-scale spatial variation within the variogram model.
+
+2.  **Fit a semivariogram along one direction with no trend.**
+
+    If one direction appears approximately stationary (for example, the **45° direction**), estimate the variogram using only data pairs aligned with that direction. Since there is little or no trend in that direction, the estimated variogram better represents the underlying spatial dependence. This approach is useful when the trend is mainly confined to another direction.
+
+3.  **Fit a trend to the data, and then fit a semivariogram to the residuals.**
+
+    This is the most common approach in geostatistics. The observed process is represented as
+
+    $$
+    Z(\mathbf{x}) = m(\mathbf{x}) + \varepsilon(\mathbf{x}),
+    $$
+
+    where
+
+    -   $m(\mathbf{x})$ is the deterministic trend, and
+    -   $\varepsilon(\mathbf{x})$ is the residual spatial process.
+
+    After estimating the trend, the residuals are computed as
+
+    $$
+    \hat{\varepsilon}(\mathbf{x}) = Z(\mathbf{x}) - \hat{m}(\mathbf{x}).
+    $$
+
+    A semivariogram is then fitted to the residuals rather than the original observations. If the trend has been adequately removed, the residual variogram should stabilize at a common sill and satisfy the stationarity assumption.
+
+### Interpretation
+
+Suppose the directional variograms show that:
+
+-   the **45° direction** has the largest range and the lowest semivariance, indicating the strongest spatial continuity; and
+-   the **135° direction** reaches a higher sill or continues to increase, indicating the presence of a spatial trend.
+
+A suitable interpretation is:
+
+> The directional variograms indicate anisotropy. The 45° direction exhibits the greatest spatial continuity, with observations remaining correlated over longer distances. In contrast, the variogram in the 135° direction reaches a higher sill (or continues to increase), suggesting the presence of a spatial trend. Because differing sills violate the assumption of stationarity, the trend should be modelled or removed before fitting the final variogram for spatial prediction.

@@ -300,6 +300,10 @@ window.Quarto = {
   <li><a href="#summary-of-anisotropy-types" id="toc-summary-of-anisotropy-types" class="nav-link" data-scroll-target="#summary-of-anisotropy-types">Summary of Anisotropy Types</a></li>
   </ul></li>
   <li><a href="#how-to-proceed" id="toc-how-to-proceed" class="nav-link" data-scroll-target="#how-to-proceed">How to proceed</a></li>
+  <li><a href="#meuse-dataset-handling" id="toc-meuse-dataset-handling" class="nav-link" data-scroll-target="#meuse-dataset-handling">Meuse dataset handling</a>
+  <ul class="collapse">
+  <li><a href="#interpretation-5" id="toc-interpretation-5" class="nav-link" data-scroll-target="#interpretation-5">Interpretation</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -2473,8 +2477,63 @@ a(\theta)
 <li><p>fit a semivariogram along one direction with no trend</p></li>
 <li><p>fit a trend to the data, and then fit a semivariogram with a sill to the residuals</p></li>
 </ol>
+</section>
+<section id="meuse-dataset-handling" class="level1">
+<h1>Meuse dataset handling</h1>
+<p>There is clear evidence of <strong>anisotropy</strong> in the variograms. Anisotropy means that spatial correlation depends on direction. In other words, observations separated by the same distance may be more similar in one direction than in another.</p>
+<p>If directional variograms (e.g., 0°, 45°, 90°, and 135°) have different shapes or reach the sill at different distances, the spatial process is anisotropic rather than isotropic.</p>
+<p>The highest level of spatial correlation is shown in the <strong>45° variogram</strong>. A variogram with the highest spatial correlation typically has:</p>
+<ul>
+<li>the slowest increase in semivariance with distance,</li>
+<li>the largest range, meaning observations remain similar over longer distances, or</li>
+<li>reaches the sill at the greatest distance.</li>
+</ul>
+<p>This indicates that observations along the <strong>45° direction remain correlated over larger distances</strong> than in other directions. Therefore, the <strong>45° direction exhibits the greatest spatial continuity</strong>.</p>
+<p>When the <strong>sill appears to be different in different directions</strong>, this suggests the presence of a <strong>trend</strong> in the data. Under second-order stationarity, the variance is constant throughout the study region. Consequently, directional variograms should eventually level off at the same sill, even if their ranges differ because of geometric anisotropy.</p>
+<p>However, if the sills differ substantially between directions, this often indicates that the assumption of stationarity has been violated. One common reason is the presence of a <strong>spatial trend (drift)</strong>.</p>
+<p>For example, suppose zinc concentration gradually increases from southwest to northeast. Then:</p>
+<ul>
+<li>observations that are far apart in the direction of the trend will differ greatly,</li>
+<li>semivariance will continue increasing with distance, and</li>
+<li>the variogram may reach a much higher sill or may not level off at all.</li>
+</ul>
+<p>Thus, differences at large distances are caused not only by spatial dependence but also by the underlying trend.</p>
+<p>There are several ways to address this:</p>
+<ol type="1">
+<li><p><strong>Fit a nested semivariogram model with an infinite range in one direction.</strong></p>
+<p>This approach models the trend as an additional component with an extremely large (effectively infinite) range. The infinite-range structure captures the large-scale variation (trend), while the finite-range structure models the local spatial correlation. This separates broad-scale and local-scale spatial variation within the variogram model.</p></li>
+<li><p><strong>Fit a semivariogram along one direction with no trend.</strong></p>
+<p>If one direction appears approximately stationary (for example, the <strong>45° direction</strong>), estimate the variogram using only data pairs aligned with that direction. Since there is little or no trend in that direction, the estimated variogram better represents the underlying spatial dependence. This approach is useful when the trend is mainly confined to another direction.</p></li>
+<li><p><strong>Fit a trend to the data, and then fit a semivariogram to the residuals.</strong></p>
+<p>This is the most common approach in geostatistics. The observed process is represented as</p>
+<p><span class="math display">\[
+Z(\mathbf{x}) = m(\mathbf{x}) + \varepsilon(\mathbf{x}),
+\]</span></p>
+<p>where</p>
+<ul>
+<li><span class="math inline">\(m(\mathbf{x})\)</span> is the deterministic trend, and</li>
+<li><span class="math inline">\(\varepsilon(\mathbf{x})\)</span> is the residual spatial process.</li>
+</ul>
+<p>After estimating the trend, the residuals are computed as</p>
+<p><span class="math display">\[
+\hat{\varepsilon}(\mathbf{x}) = Z(\mathbf{x}) - \hat{m}(\mathbf{x}).
+\]</span></p>
+<p>A semivariogram is then fitted to the residuals rather than the original observations. If the trend has been adequately removed, the residual variogram should stabilize at a common sill and satisfy the stationarity assumption.</p></li>
+</ol>
+<section id="interpretation-5" class="level3">
+<h3 class="anchored" data-anchor-id="interpretation-5">Interpretation</h3>
+<p>Suppose the directional variograms show that:</p>
+<ul>
+<li>the <strong>45° direction</strong> has the largest range and the lowest semivariance, indicating the strongest spatial continuity; and</li>
+<li>the <strong>135° direction</strong> reaches a higher sill or continues to increase, indicating the presence of a spatial trend.</li>
+</ul>
+<p>A suitable interpretation is:</p>
+<blockquote class="blockquote">
+<p>The directional variograms indicate anisotropy. The 45° direction exhibits the greatest spatial continuity, with observations remaining correlated over longer distances. In contrast, the variogram in the 135° direction reaches a higher sill (or continues to increase), suggesting the presence of a spatial trend. Because differing sills violate the assumption of stationarity, the trend should be modelled or removed before fitting the final variogram for spatial prediction.</p>
+</blockquote>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
