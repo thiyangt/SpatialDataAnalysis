@@ -2251,3 +2251,7 @@ Suppose the directional variograms show that:
 A suitable interpretation is:
 
 > The directional variograms indicate anisotropy. The 45° direction exhibits the greatest spatial continuity, with observations remaining correlated over longer distances. In contrast, the variogram in the 135° direction reaches a higher sill (or continues to increase), suggesting the presence of a spatial trend. Because differing sills violate the assumption of stationarity, the trend should be modelled or removed before fitting the final variogram for spatial prediction.
+
+# variogram template
+
+In geostatistics, a variogram template (or search template) defines the spatial area used to find data pairs for variogram calculation. 
