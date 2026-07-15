@@ -31,7 +31,7 @@ Task: Predict temperature for unobserved locations
 
 [Spatial Data Science](https://thiyangt.github.io/spatialmodellingversion2/#/title-slide)
 
-## Week 10: 9 July 2026
+## Week 10/11: 9 July 2026
 
 [Spatial Interpolation with meuse dataset](/week6/index.html)
 
@@ -64,3 +64,6 @@ Please ensure that the folder structure strictly follows the above format. Any s
 
 Upload your work to the Google Classroom.
 
+## Week 12: Spatio-temporal Kriging
+
+Click [here](https://r-video-tutorial.blogspot.com/2015/08/spatio-temporal-kriging-in-r.html)
