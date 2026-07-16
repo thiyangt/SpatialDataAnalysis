@@ -67,3 +67,5 @@ Upload your work to the Google Classroom.
 ## Week 12: Spatio-temporal Kriging
 
 Click [here](https://r-video-tutorial.blogspot.com/2015/08/spatio-temporal-kriging-in-r.html)
+
+[Data set](https://data.mendeley.com/datasets/p86hnykz3d/2)
